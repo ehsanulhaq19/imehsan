@@ -20,6 +20,14 @@ export class MediaService {
     });
   }
 
+  deleteOne(id: string) {
+    return this.mediaRepository.deleteOne(id);
+  }
+
+  listPaginated(page: number, limit: number, q?: string) {
+    return this.mediaRepository.listPaginated(page, limit, q);
+  }
+
   findOne(id: string) {
     return this.mediaRepository.findOne(id);
   }

@@ -11,6 +11,7 @@ import {
   MAX_UPLOAD_BYTES,
   assertMimeAllowed,
 } from '../../common/upload.constants';
+import { Appointment } from '../../database/entities/appointment.entity';
 import { UserType } from '../../database/entities/user.entity';
 import { MailService } from '../mail/mail.service';
 import { MediaService } from '../media/media.service';
@@ -70,7 +71,7 @@ export class AppointmentsService {
     this.validateFiles(payload.files);
     let bookerUserId: string | null = null;
     const existing = await this.users.findByEmail(payload.contactEmail);
-    if (existing?.userType === UserType.BOOKER) {
+    if (existing && existing.userType === UserType.BOOKER) {
       bookerUserId = existing.id;
     } else if (!existing) {
       const booker = await this.users.createBooker({
@@ -120,6 +121,18 @@ export class AppointmentsService {
       this.logger.error('Mail send failed', e as Error);
     }
     return { id: appt.id, status: appt.status };
+  }
+
+  listAdminPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listAdminPaginated(page, limit, q);
+  }
+
+  updateAppointment(id: string, data: Partial<Appointment>) {
+    return this.repo.updateOne(id, data);
+  }
+
+  deleteAppointment(id: string) {
+    return this.repo.remove(id);
   }
 
   listAdmin() {

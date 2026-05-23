@@ -9,6 +9,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { CaseStudiesModule } from './modules/case-studies/case-studies.module';
 import { CertificationsModule } from './modules/certifications/certifications.module';
 import { EmailConfigModule } from './modules/email-config/email-config.module';
@@ -45,6 +46,7 @@ import { VlogsModule } from './modules/vlogs/vlogs.module';
       },
     }),
     UsersModule,
+    DashboardModule,
     AuthModule,
     MailModule,
     MediaModule,

@@ -1,0 +1,105 @@
+{
+    "theme": "trust_premium_brand",
+    "fontFamilies": {
+      "primary": {
+        "name": "Inter",
+        "fallback": "sans-serif",
+        "usage": ["headings", "body", "buttons", "navigation"]
+      },
+      "secondary": {
+        "name": "IBM Plex Mono",
+        "fallback": "monospace",
+        "usage": ["tech stack", "code snippets", "labels", "tags"]
+      },
+      "accent": {
+        "name": "Merriweather",
+        "fallback": "serif",
+        "usage": ["quotes", "highlight statements", "testimonials"]
+      }
+    },
+    "fontWeights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800
+    },
+    "fontSizes": {
+      "desktop": {
+        "heroTitle": {
+          "size": "56px",
+          "weight": 800,
+          "lineHeight": 1.1
+        },
+        "heroSubtitle": {
+          "size": "22px",
+          "weight": 500,
+          "lineHeight": 1.5
+        },
+        "sectionTitle": {
+          "size": "38px",
+          "weight": 700,
+          "lineHeight": 1.2
+        },
+        "subHeading": {
+          "size": "24px",
+          "weight": 600,
+          "lineHeight": 1.3
+        },
+        "cardTitle": {
+          "size": "22px",
+          "weight": 600,
+          "lineHeight": 1.3
+        },
+        "body": {
+          "size": "16px",
+          "weight": 400,
+          "lineHeight": 1.7
+        },
+        "smallText": {
+          "size": "14px",
+          "weight": 400,
+          "lineHeight": 1.6
+        },
+        "caption": {
+          "size": "12px",
+          "weight": 400,
+          "lineHeight": 1.5
+        },
+        "button": {
+          "size": "15px",
+          "weight": 600,
+          "lineHeight": 1.2
+        },
+        "navItem": {
+          "size": "15px",
+          "weight": 500,
+          "lineHeight": 1.2
+        },
+        "tag": {
+          "size": "13px",
+          "weight": 500,
+          "lineHeight": 1.2
+        }
+      },
+      "mobile": {
+        "heroTitle": "40px",
+        "heroSubtitle": "18px",
+        "sectionTitle": "30px",
+        "subHeading": "20px",
+        "cardTitle": "18px",
+        "body": "15px",
+        "smallText": "13px",
+        "button": "14px",
+        "navItem": "14px",
+        "tag": "12px"
+      }
+    },
+    "letterSpacing": {
+      "heroTitle": "-0.03em",
+      "sectionTitle": "-0.02em",
+      "body": "0em",
+      "button": "0.01em"
+    },
+    "bestUseCase": "Professional AI engineer portfolio with strong trust, enterprise, and premium brand feel"
+  }

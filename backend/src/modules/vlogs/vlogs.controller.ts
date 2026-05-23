@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,6 +20,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { VlogsService } from './vlogs.service';
 
@@ -102,9 +104,18 @@ export class VlogsPublicController {
 export class VlogsAdminController {
   constructor(private readonly svc: VlogsService) {}
 
+  @Get('activity')
+  activity(@Query('limit') limitRaw?: string) {
+    const limit = Math.min(50, Math.max(1, parseInt(limitRaw ?? '20', 10) || 20));
+    return this.svc.recentActivity(limit);
+  }
+
   @Get()
-  list() {
-    return this.svc.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const { items, total } = await this.svc.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()
@@ -115,6 +126,11 @@ export class VlogsAdminController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: Partial<VlogDto>) {
     return this.svc.update(id, dto);
+  }
+
+  @Delete(':id/media/:pivotId')
+  detachMedia(@Param('id') id: string, @Param('pivotId') pivotId: string) {
+    return this.svc.detachMedia(id, pivotId);
   }
 
   @Delete(':id')

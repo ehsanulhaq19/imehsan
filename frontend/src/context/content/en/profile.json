@@ -1,0 +1,106 @@
+{
+  "name": "Ehsan ul Haq",
+  "title": "Senior AI Full Stack Engineer",
+  "experienceYears": "7+",
+  "summary": "Senior AI full stack engineer delivering production systems where web platforms, APIs, and applied machine learning meet. I lead end to end work on LLM features, retrieval heavy workflows, typed services, and observable backends with the same discipline as core product software.",
+  "website": "http://imehsan.com",
+  "seo": {
+    "title": "Ehsan ul Haq · Senior AI Full Stack Engineer",
+    "metaDescription": "Senior AI full stack engineer. Production web systems, APIs, LLM integrations, RAG, and cloud backed delivery. Seven plus years shipping reliable software for teams that need both speed and engineering depth."
+  },
+  "coreExpertise": [
+    "AI Systems & LLM Integration",
+    "Full Stack Web & API Delivery",
+    "RAG & Retrieval Architecture",
+    "TypeScript, Node.js & Service Design",
+    "React & Modern Frontend Engineering",
+    "PostgreSQL, Data Modeling & Performance",
+    "System Architecture & Technical Leadership",
+    "Vector Search & Embeddings Pipelines",
+    "Cloud & Containerized Deployments",
+    "Security, AuthN/Z & Production Hardening"
+  ],
+  "frontend": {
+    "frameworks": ["React", "Next.js", "Vue.js", "Nuxt.js"],
+    "skills": [
+      "Component Architecture & Design Systems",
+      "Client Performance & Core Web Vitals",
+      "Streaming UIs & Async State",
+      "SSR, RSC, and Edge Aware Patterns",
+      "Accessible, Testable Interfaces"
+    ]
+  },
+  "backend": {
+    "frameworks": ["Node.js", "FastAPI", "Django", "Laravel", "Symfony"],
+    "skills": [
+      "REST & GraphQL APIs",
+      "Transactional Design & Idempotency",
+      "Auth, Tenancy & Policy Enforcement",
+      "Async Jobs, Queues & Eventing",
+      "Operational Logging & Tracing"
+    ]
+  },
+  "aiAndMl": {
+    "skills": [
+      "LLM Application Design",
+      "Prompting, Tool Calling & Agents",
+      "RAG, Chunking & Hybrid Search",
+      "Vector Databases & Embeddings",
+      "Evals, Monitoring & Guardrails",
+      "Cost, Latency & Reliability Tuning"
+    ],
+    "tools": ["OpenAI", "Anthropic", "Pinecone", "PostgreSQL pgvector"],
+    "projects": [
+      {
+        "name": "WorkBot",
+        "description": "Production chat system with document ingestion, business knowledge retrieval, and grounded answers using vector stores and policy aware prompts."
+      },
+      {
+        "name": "Sign Language Translator",
+        "description": "Research concept combining computer vision models and accessible UX to translate sign language into text and synthesized speech."
+      }
+    ]
+  },
+  "ecommerce": {
+    "platforms": ["Shopware 6", "Magento"],
+    "skills": [
+      "Custom Extensions & Storefront APIs",
+      "Catalog, Pricing & Checkout Flows",
+      "Headless & Composable Integrations",
+      "Performance at Scale for Merchandising"
+    ]
+  },
+  "database": {
+    "databases": ["PostgreSQL", "MySQL"],
+    "skills": [
+      "Indexing, Query Plans & Migrations",
+      "Schema Design for Multi Tenant Workloads",
+      "Backup, Recovery & HA Basics"
+    ]
+  },
+  "devopsAndTools": {
+    "tools": ["Git", "Docker", "AWS", "CI Pipelines"],
+    "skills": ["Environment Parity", "Release Discipline", "Infra as Code Lite", "Incident Ready Runbooks"]
+  },
+  "mobileAndCrossPlatform": {
+    "skills": ["APIs for Mobile Clients", "OAuth & Token Lifecycles", "Push Ready Backends"]
+  },
+  "professionalServices": [
+    "AI Product & Platform Architecture",
+    "Full Stack Build & Integration Sprints",
+    "API & Contract Design",
+    "Performance & Reliability Reviews",
+    "Mentoring & Codebase Modernization"
+  ],
+  "freelance": {
+    "years": 3,
+    "domains": ["Ecommerce", "Internal Tools", "AI Assistants", "Workflow Automation"]
+  },
+  "softSkills": [
+    "Technical Leadership",
+    "Stakeholder Alignment",
+    "Written Specs & ADRs",
+    "Hiring & Interview Loops",
+    "Teaching & Pairing"
+  ]
+}

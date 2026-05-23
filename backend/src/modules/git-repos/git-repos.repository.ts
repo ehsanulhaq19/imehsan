@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { GitRepo } from '../../database/entities/git-repo.entity';
 
 @Injectable()
@@ -16,6 +16,27 @@ export class GitReposRepository {
 
   listAdmin() {
     return this.listPublic();
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('g')
+      .orderBy('g.sortOrder', 'ASC')
+      .addOrderBy('g.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('g.name ILIKE :s', { s })
+            .orWhere('g.description ILIKE :s', { s })
+            .orWhere('g.url ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<GitRepo>) {

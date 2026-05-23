@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { SocialLink } from '../../database/entities/social-link.entity';
 
 @Injectable()
@@ -16,6 +16,27 @@ export class SocialLinksRepository {
 
   listAdmin() {
     return this.listPublic();
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('s')
+      .orderBy('s.sortOrder', 'ASC')
+      .addOrderBy('s.createdAt', 'ASC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const k = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('s.name ILIKE :k', { k })
+            .orWhere('s.linkUrl ILIKE :k', { k })
+            .orWhere('s.iconUrl ILIKE :k', { k });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<SocialLink>) {

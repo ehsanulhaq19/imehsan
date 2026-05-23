@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { GitReposRepository } from './git-repos.repository';
 
@@ -33,8 +34,11 @@ export class GitReposAdminController {
   constructor(private readonly repo: GitReposRepository) {}
 
   @Get()
-  list() {
-    return this.repo.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.repo.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()

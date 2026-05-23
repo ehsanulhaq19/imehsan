@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { EmailProviderType } from '../../database/entities/email-config.entity';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { EmailConfigRepository } from './email-config.repository';
@@ -44,8 +45,11 @@ export class EmailConfigController {
   constructor(private readonly repo: EmailConfigRepository) {}
 
   @Get()
-  list() {
-    return this.repo.list();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.repo.listPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()

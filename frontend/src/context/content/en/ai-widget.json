@@ -1,0 +1,29 @@
+{
+  "greeting": "Hi. I can summarize how Ehsan works as a senior AI full stack engineer: production APIs, web platforms, LLM integrations, RAG, and cloud delivery. Add your name and email if you want, then ask anything.",
+  "launcher": {
+    "ariaLabel": "Open AI assistant",
+    "pillLabel": "AI Assistant"
+  },
+  "panel": {
+    "title": "IMEHSAN",
+    "subtitle": "AI assistant. Fast factual answers.",
+    "expandAria": "Expand panel",
+    "collapseAria": "Use smaller panel",
+    "closeAria": "Close assistant"
+  },
+  "intro": {
+    "nameLabel": "Name",
+    "nameOptional": "(optional)",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailOptional": "(optional)",
+    "emailPlaceholder": "you@example.com",
+    "continue": "Continue"
+  },
+  "chat": {
+    "thinking": "Thinking...",
+    "inputPlaceholder": "Ask about stacks, projects, timelines...",
+    "send": "Send",
+    "fallbackReply": "Assistant unavailable."
+  }
+}

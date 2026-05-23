@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { ProjectMedia } from '../../database/entities/project-media.entity';
 import { Project } from '../../database/entities/project.entity';
 
@@ -61,5 +61,26 @@ export class ProjectsRepository {
       order: { sortOrder: 'ASC', createdAt: 'DESC' },
       relations: { projectMedia: { media: true } },
     });
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.projects
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.projectMedia', 'pm')
+      .leftJoinAndSelect('pm.media', 'm')
+      .orderBy('p.sortOrder', 'ASC')
+      .addOrderBy('p.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('p.slug ILIKE :s', { s }).orWhere('p.heading ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 }

@@ -1,8 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -16,6 +20,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { AppointmentsService } from './appointments.service';
 
@@ -47,6 +52,42 @@ class BookAppointmentDto {
   reason?: string;
 }
 
+class PatchAppointmentDto {
+  @IsOptional()
+  @IsString()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  appointmentDate?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\d{2}:\d{2}(:\d{2})?$/)
+  appointmentTime?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  contactName?: string;
+
+  @IsOptional()
+  @IsEmail()
+  contactEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  contactPhone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(4000)
+  reason?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  status?: string;
+}
+
 @Controller('appointments')
 export class AppointmentsPublicController {
   constructor(private readonly svc: AppointmentsService) {}
@@ -72,7 +113,20 @@ export class AppointmentsAdminController {
   constructor(private readonly svc: AppointmentsService) {}
 
   @Get()
-  list() {
-    return this.svc.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.svc.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
+  }
+
+  @Patch(':id')
+  patch(@Param('id') id: string, @Body() dto: PatchAppointmentDto) {
+    return this.svc.updateAppointment(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.svc.deleteAppointment(id);
   }
 }

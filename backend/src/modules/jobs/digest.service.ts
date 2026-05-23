@@ -31,8 +31,8 @@ export class DigestService {
     const start = new Date(end);
     start.setDate(start.getDate() - 1);
 
-    const sessions = await this.analytics.sessionsBetween(start, end);
-    const pageHits = sessions.reduce((n, s) => n + (s.pages?.length ?? 0), 0);
+    const sessionGroups = await this.analytics.distinctVisitorDaysCountBetween(start, end);
+    const pageHits = await this.analytics.pageHitsBetween(start, end);
     const createdAppts = await this.appointments.createdBetween(start, end);
 
     const today = new Date();
@@ -45,7 +45,7 @@ export class DigestService {
     const lines = [
       `Daily digest (${source})`,
       `Window (UTC midnight aligned): ${start.toISOString()} → ${end.toISOString()}`,
-      `Sessions: ${sessions.length}, Page hits: ${pageHits}`,
+      `Unique visitor-days (sessions started in window): ${sessionGroups}, Page hits (pages opened in window): ${pageHits}`,
       `Appointments created in window: ${createdAppts.length}`,
       `Appointments scheduled today (${todayStr}): ${dueToday.length}`,
     ];

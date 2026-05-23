@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
+const publicChrome =
+  "relative isolate flex min-h-[100svh] flex-col bg-brand-bg font-brand text-fp-body text-brand-fg [-webkit-font-smoothing:antialiased]";
+
 export function SiteFrame({ children }: { children: React.ReactNode }) {
   const path = usePathname() ?? "/";
   const isAdmin = path.startsWith("/admin");
@@ -13,9 +16,9 @@ export function SiteFrame({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={publicChrome}>
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="min-h-0 flex-1 shrink-0 pt-[5.75rem] md:pt-[6.5rem]">{children}</main>
       <SiteFooter />
     </div>
   );

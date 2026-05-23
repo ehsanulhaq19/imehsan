@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { IsInt, IsOptional, IsString, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { SocialLinksRepository } from './social-links.repository';
 
@@ -39,8 +40,11 @@ export class SocialLinksAdminController {
   constructor(private readonly repo: SocialLinksRepository) {}
 
   @Get()
-  list() {
-    return this.repo.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.repo.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()

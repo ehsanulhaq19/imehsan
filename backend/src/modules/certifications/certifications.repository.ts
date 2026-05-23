@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Certification } from '../../database/entities/certification.entity';
 
 @Injectable()
@@ -23,6 +23,25 @@ export class CertificationsRepository {
 
   listAdmin() {
     return this.repo.find({ order: { sortOrder: 'ASC', createdAt: 'DESC' } });
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('c')
+      .orderBy('c.sortOrder', 'ASC')
+      .addOrderBy('c.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('c.slug ILIKE :s', { s }).orWhere('c.heading ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<Certification>) {

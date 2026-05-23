@@ -16,6 +16,10 @@ export class CaseStudiesService {
     return row;
   }
 
+  listAdminPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listAdminPaginated(page, limit, q);
+  }
+
   listAdmin() {
     return this.repo.listAdmin();
   }

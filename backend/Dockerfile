@@ -17,4 +17,4 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 RUN mkdir -p /app/uploads
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "npm run migration:run:prod && node dist/main.js"]

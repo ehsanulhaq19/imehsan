@@ -9,6 +9,8 @@ import {
   VlogsAdminController,
   VlogsPublicController,
 } from './vlogs.controller';
+import { VlogCommentsAdminController } from './vlog-comments-admin.controller';
+import { VlogVotesAdminController } from './vlog-votes-admin.controller';
 import { VlogsRepository } from './vlogs.repository';
 import { VlogsService } from './vlogs.service';
 
@@ -17,7 +19,12 @@ import { VlogsService } from './vlogs.service';
     TypeOrmModule.forFeature([Vlog, VlogMedia, VlogComment, VlogVote]),
     AuthModule,
   ],
-  controllers: [VlogsPublicController, VlogsAdminController],
+  controllers: [
+    VlogsPublicController,
+    VlogsAdminController,
+    VlogCommentsAdminController,
+    VlogVotesAdminController,
+  ],
   providers: [VlogsRepository, VlogsService],
 })
 export class VlogsModule {}

@@ -5,14 +5,28 @@
 :root {
   --background: #fcfcfc;
   --foreground: #626262;
+  --card-bg: #ffffff;
+  --card-border: #e5e5e5;
+  --admin-sidebar: #f3f3f3;
+  --hcode-gray-surface: #f6f6f6;
+  --hcode-input-border: #dfdfdf;
+}
+
+.dark {
+  --background: #0f0f0f;
+  --foreground: #c4c4c4;
+  --card-bg: #171717;
+  --card-border: #2a2a2a;
+  --admin-sidebar: #141414;
+  --hcode-gray-surface: #1c1c1c;
+  --hcode-input-border: #404040;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-size: 13px;
-  line-height: 1.77;
-  letter-spacing: 0.02em;
+  font-size: 1rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -20,25 +34,76 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  .ease-out-custom {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ease-brand-reveal {
+    transition-timing-function: cubic-bezier(0.28, 0.92, 0.35, 1);
+  }
 }
+
+@keyframes imehsan-drawer-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.94;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.site-drawer-panel {
+  animation: imehsan-drawer-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 
 @layer components {
   .hcode-section-title {
-    @apply font-display text-xs font-semibold uppercase tracking-[0.2em] text-black;
+    @apply font-display text-xs font-semibold uppercase tracking-[0.2em] text-black dark:text-neutral-100;
   }
   .hcode-card {
-    @apply border border-hcode-border bg-white p-6;
+    @apply border border-hcode-border bg-card p-6;
   }
   .hcode-link {
-    @apply text-hcode-violet hover:text-black;
+    @apply text-hcode-violet hover:text-black dark:hover:text-white;
   }
   .hcode-btn {
-    @apply inline-block border-2 border-black bg-black px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-transparent hover:text-black;
+    @apply inline-block border-2 border-black bg-black px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-transparent hover:text-black dark:border-neutral-200 dark:bg-neutral-200 dark:text-black dark:hover:bg-transparent dark:hover:text-neutral-200;
   }
   .hcode-btn-outline {
-    @apply inline-block border-2 border-black bg-transparent px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-black transition-colors duration-200 hover:bg-black hover:text-white;
+    @apply inline-block border-2 border-black bg-transparent px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-black transition-colors duration-200 hover:bg-black hover:text-white dark:border-neutral-300 dark:text-neutral-100 dark:hover:bg-neutral-100 dark:hover:text-black;
   }
   .hcode-input {
-    @apply mt-1 w-full rounded-none border border-hcode-input bg-white px-4 py-2.5 text-[11px] uppercase tracking-wider text-black outline-none focus:border-black;
+    @apply mt-1 w-full rounded-none border border-hcode-input bg-card px-4 py-2.5 text-[11px] uppercase tracking-wider text-black outline-none focus:border-black dark:text-neutral-100 dark:focus:border-neutral-400;
   }
+  /** Public brand cards (marketing pages). */
+  .brand-card {
+    @apply border border-brand-outline-soft/35 bg-brand-white/80 shadow-sm backdrop-blur-sm;
+  }
+  .brand-link {
+    @apply font-medium text-brand-tertiary transition-colors hover:text-brand-fg;
+  }
+}
+
+/* Marketing shell: stitched 3d / blueprint texture */
+.marketing-grid-bg {
+  background-image: radial-gradient(rgb(196 199 200 / 0.45) 0.55px, transparent 0.55px);
+  background-size: 24px 24px;
+}
+
+.card-3d-tilt {
+  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-3d-tilt:hover {
+  transform: translateY(-10px) rotateX(4deg) rotateY(-4deg);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

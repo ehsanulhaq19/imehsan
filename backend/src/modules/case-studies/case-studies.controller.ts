@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { IsBoolean, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { CaseStudiesService } from './case-studies.service';
 
@@ -48,8 +49,11 @@ export class CaseStudiesAdminController {
   constructor(private readonly svc: CaseStudiesService) {}
 
   @Get()
-  list() {
-    return this.svc.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.svc.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()

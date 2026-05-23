@@ -63,8 +63,27 @@ export class AiService {
     }
   }
 
-  listConversations() {
-    return this.repo.listConversations();
+  listConversations(limit?: number) {
+    return this.repo.listConversations(limit);
+  }
+
+  listConversationsPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listConversationsPaginated(page, limit, q);
+  }
+
+  getConversation(id: string) {
+    return this.repo.findConversation(id);
+  }
+
+  patchConversation(
+    id: string,
+    data: Partial<{ guestName: string | null; guestEmail: string | null }>,
+  ) {
+    return this.repo.patchConversation(id, data);
+  }
+
+  deleteConversation(id: string) {
+    return this.repo.deleteConversation(id);
   }
 
   async getConfigForAdmin() {

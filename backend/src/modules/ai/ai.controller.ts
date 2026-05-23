@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { AiService } from './ai.service';
 
@@ -53,6 +54,17 @@ class PatchAiDto {
   maxTokens?: number;
 }
 
+class PatchConversationDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  guestName?: string | null;
+
+  @IsOptional()
+  @IsEmail()
+  guestEmail?: string | null;
+}
+
 @Controller('ai')
 export class AiPublicController {
   constructor(private readonly ai: AiService) {}
@@ -69,8 +81,26 @@ export class AiAdminController {
   constructor(private readonly ai: AiService) {}
 
   @Get('conversations')
-  conversations() {
-    return this.ai.listConversations();
+  async conversations(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.ai.listConversationsPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
+  }
+
+  @Get('conversations/:id')
+  conversation(@Param('id') id: string) {
+    return this.ai.getConversation(id);
+  }
+
+  @Patch('conversations/:id')
+  patchConversation(@Param('id') id: string, @Body() dto: PatchConversationDto) {
+    return this.ai.patchConversation(id, dto);
+  }
+
+  @Delete('conversations/:id')
+  removeConversation(@Param('id') id: string) {
+    return this.ai.deleteConversation(id);
   }
 
   @Get('config')

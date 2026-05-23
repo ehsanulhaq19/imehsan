@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CaseStudyMedia } from '../../database/entities/case-study-media.entity';
 import { CaseStudy } from '../../database/entities/case-study.entity';
 
@@ -33,6 +33,27 @@ export class CaseStudiesRepository {
       order: { sortOrder: 'ASC', createdAt: 'DESC' },
       relations: { attachments: { media: true } },
     });
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.attachments', 'a')
+      .leftJoinAndSelect('a.media', 'm')
+      .orderBy('c.sortOrder', 'ASC')
+      .addOrderBy('c.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('c.slug ILIKE :s', { s }).orWhere('c.title ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<CaseStudy>) {

@@ -31,6 +31,10 @@ export class ProjectsService {
     return this.repo.attachMedia(projectId, mediaId, role);
   }
 
+  listAdminPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listAdminPaginated(page, limit, q);
+  }
+
   listAdmin() {
     return this.repo.listAdmin();
   }

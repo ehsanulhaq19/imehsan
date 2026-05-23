@@ -36,6 +36,34 @@ export class VlogsService {
     return this.repo.listAdmin();
   }
 
+  listAdminPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listAdminPaginated(page, limit, q);
+  }
+
+  recentActivity(limit: number) {
+    return this.repo.recentActivity(limit);
+  }
+
+  listCommentsPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listCommentsPaginated(page, limit, q);
+  }
+
+  listVotesPaginated(page: number, limit: number, q?: string) {
+    return this.repo.listVotesPaginated(page, limit, q);
+  }
+
+  patchComment(id: string, body: { authorName?: string | null; body?: string }) {
+    return this.repo.updateComment(id, body);
+  }
+
+  deleteComment(id: string) {
+    return this.repo.deleteComment(id);
+  }
+
+  deleteVote(id: string) {
+    return this.repo.deleteVote(id);
+  }
+
   create(data: Partial<Vlog>) {
     return this.repo.create(data);
   }
@@ -50,6 +78,10 @@ export class VlogsService {
 
   attach(id: string, mediaId: string, role: string) {
     return this.repo.attach(id, mediaId, role);
+  }
+
+  detachMedia(vlogId: string, pivotId: string) {
+    return this.repo.detachMedia(vlogId, pivotId);
   }
 
   async comment(slug: string, authorName: string | undefined, body: string) {

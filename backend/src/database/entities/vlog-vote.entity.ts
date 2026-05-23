@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -27,4 +28,7 @@ export class VlogVote {
   /** 1 = like, -1 = dislike */
   @Column({ type: 'smallint' })
   value: number;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  createdAt: Date;
 }

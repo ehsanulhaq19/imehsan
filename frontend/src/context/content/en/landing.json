@@ -1,0 +1,113 @@
+{
+  "hero": {
+    "imageAlt": "Abstract engineered environment",
+    "headlineBeforeAccent": "Architecting ",
+    "headlineAccent": "web & AI",
+    "headlineAfterAccent": " systems you can run in production",
+    "primaryCta": "View projects",
+    "secondaryCta": "Book consultation"
+  },
+  "trustStrip": {
+    "label": "Senior delivery focus",
+    "items": ["Production APIs", "LLM systems", "Commerce platforms", "Cloud operations", "Executive partnerships"]
+  },
+  "metrics": [
+    {
+      "valueKey": "experienceYears",
+      "label": "Years shipping production grade software"
+    },
+    {
+      "valueKey": "static",
+      "staticValue": "Full stack + AI",
+      "label": "Typed services, data planes, models, evaluations, and user facing surfaces in one lane"
+    },
+    {
+      "valueKey": "static",
+      "staticValue": "Remote friendly",
+      "label": "Specs, rituals, and measurable milestones engineered for distributed teams"
+    }
+  ],
+  "philosophy": {
+    "heading": "How senior engineers deliver",
+    "pillars": [
+      {
+        "title": "Architecture before hero features",
+        "body": "Interfaces, ownership boundaries, and failure modes are defined first so velocity does not melt operability."
+      },
+      {
+        "title": "AI with production contracts",
+        "body": "Grounded retrieval, deterministic fallbacks, logging, and governance so assistants stay inside business rules."
+      }
+    ],
+    "codePanel": {
+      "className": "SeniorAIService",
+      "initLine": "self.reliability_first = \"yes\"",
+      "stackItems": ["\"TypeScript\"", "\"Node\"", "\"OpenAI\""],
+      "methodName": "deploy",
+      "methodReturn": "policy.guard().serve().observe()",
+      "instanceFocus": "\"production\"",
+      "shipArg": "\"your next milestone\""
+    }
+  },
+  "sections": {
+    "projects": {
+      "eyebrow": "Selected work",
+      "title": "Systems that held up in the real world.",
+      "lead": "APIs, storefronts, automation, and assistant style features that moved from proposal to monitored production.",
+      "footerLink": "Open full portfolio",
+      "empty": "New case studies are syncing. Check back shortly.",
+      "flagshipBadge": "Flagship",
+      "compactCta": "Open",
+      "cardCta": "View case outline"
+    },
+    "caseStudies": {
+      "eyebrow": "Case studies",
+      "title": "Narratives from the hard parts.",
+      "lead": "Problems, limits, trade offs, and outcomes for leaders who care about maintainability and measurable impact.",
+      "footerLink": "Browse all studies",
+      "readLink": "Read narrative",
+      "empty": "Long form writeups publish here as they are finalized."
+    },
+    "repos": {
+      "eyebrow": "Research & code",
+      "title": "Repositories and experimentation.",
+      "highlighted": "Highlighted",
+      "highlightLead": "Executable reference patterns you can adapt to a greenfield codebase.",
+      "openRepo": "Open repository",
+      "moreTitle": "More on GitHub",
+      "curatedList": "View curated list",
+      "arrow": "→",
+      "empty": "Link your repositories in admin to populate this wall."
+    },
+    "vlogs": {
+      "eyebrow": "Video logs",
+      "title": "Notes for teams evaluating AI and platform bets.",
+      "footerLink": "Watch the channel",
+      "empty": "Episodes publish here when available.",
+      "cardSub": "Build notes and commentary."
+    },
+    "certifications": {
+      "eyebrow": "Validation",
+      "title": "Credentials that mirror the work.",
+      "footerLink": "Full credential wall",
+      "arrow": "→",
+      "empty": "Certifications appear automatically after sync."
+    },
+    "testimonials": {
+      "eyebrow": "Proof",
+      "title": "What partners highlight.",
+      "empty": "Approved quotes from collaborators show up on this wall.",
+      "attributionSeparator": " · "
+    },
+    "finalCta": {
+      "eyebrow": "Limited availability",
+      "title": "Private strategy consultation",
+      "body": "Bring ambiguity. Leave with sequencing, staffing assumptions, and a pragmatic technical narrative you can share internally.",
+      "primary": "Reserve a session",
+      "secondary": "Read background"
+    }
+  },
+  "assets": {
+    "heroImageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBY8vzkt9nkV2eQMNAxekjHBCiCJZOUZq8E1BrOXdj8G5krAo7JlsK-1P2BIoRrq4Y3cnMppQ9NSCZ0uXeJappRqWGOMNrYXW_IXSa2lVAod8EdnoMDNB4s9jtCZNwv4YUNAv5ytr_vl4_D2msiMLjpAun_qL7moXMZqIOwaaDztPMTLjLE27ToCJJQ2Aav1log9DFkskpI2av9_X5HdAYs5r8Wp7KXenQ-60ZI2y1mX1t2AGnuHENKvNd3Joc3cqLEwrvInsMvCjk"
+  }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { AiWidgetConfig } from '../../database/entities/ai-widget-config.entity';
 import { ConversationMessage } from '../../database/entities/conversation-message.entity';
 import { Conversation } from '../../database/entities/conversation.entity';
@@ -74,6 +74,38 @@ export class AiRepository {
       take: limit,
       relations: { messages: true },
     });
+  }
+
+  async listConversationsPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.conv
+      .createQueryBuilder('c')
+      .orderBy('c.updatedAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('c.guestSessionId ILIKE :s', { s })
+            .orWhere('c.guestName ILIKE :s', { s })
+            .orWhere('c.guestEmail ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
+  }
+
+  async patchConversation(
+    id: string,
+    data: Partial<{ guestName: string | null; guestEmail: string | null }>,
+  ) {
+    await this.conv.update({ id }, data as never);
+    return this.conv.findOneByOrFail({ id });
+  }
+
+  async deleteConversation(id: string) {
+    await this.conv.delete({ id });
   }
 
   addMessage(conversationId: string, role: string, content: string) {

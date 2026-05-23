@@ -1,20 +1,16 @@
 import Link from "next/link";
-import { BookingForm } from "@/components/BookingForm";
+import { ConsultationBooking } from "@/components/booking/ConsultationBooking";
+import { content } from "@/lib/content-registry";
 
 export default function BookingPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-14 text-hcode-muted md:py-20">
-      <Link href="/" className="hcode-link text-[11px] font-semibold uppercase tracking-[0.2em]">
-        ← Home
+    <div className="mx-auto w-full max-w-content px-page-x pb-20 pt-2 md:px-page-x-md md:pb-28 md:pt-4">
+      <Link href="/" className="inline-block font-brand-mono text-fp-tag uppercase text-brand-secondary transition-colors hover:text-brand-fg">
+        {content.booking.backLink}
       </Link>
-      <h1 className="font-display mt-8 text-2xl uppercase text-black md:text-3xl">Book an appointment</h1>
-      <p className="mt-4 max-w-xl text-sm leading-relaxed">
-        Files are validated in the browser and again on the server. Allowed types: PDF, common images, Word documents.
-      </p>
-      <div className="mt-10">
-        <BookingForm />
+      <div className="mt-6 md:mt-8">
+        <ConsultationBooking />
       </div>
     </div>
   );
 }
-

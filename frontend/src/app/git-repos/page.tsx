@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchGitReposList } from "@/api/git-repos";
+import { BrandBack, BrandH1, BrandMain, BrandMuted } from "@/components/brand/BrandPage";
 
 type Repo = {
   id: string;
@@ -12,33 +13,28 @@ type Repo = {
 export default async function GitReposPage() {
   const list = await fetchGitReposList<Repo[]>();
   return (
-    <div className="mx-auto max-w-3xl px-4 py-14 text-hcode-muted md:py-20">
-      <Link href="/" className="hcode-link text-[11px] font-semibold uppercase tracking-[0.2em]">
-        ← Home
-      </Link>
-      <h1 className="font-display mt-8 text-2xl uppercase text-black md:text-3xl">Git repositories</h1>
-      <ul className="mt-10 space-y-6">
+    <BrandMain>
+      <BrandBack href="/">← Home</BrandBack>
+      <BrandH1>Git repositories</BrandH1>
+      <ul className="mt-12 space-y-6">
         {(list ?? []).map((r) => (
-          <li key={r.id} className="border border-hcode-border bg-white p-5">
-            <a
+          <li key={r.id} className="brand-card rounded-sm border border-brand-outline-soft/40 p-6">
+            <Link
               href={r.url}
-              className="font-display text-lg font-normal uppercase text-black hover:text-hcode-violet"
+              className="font-brand text-[17px] font-semibold uppercase tracking-[0.06em] text-brand-fg transition-colors hover:text-brand-tertiary"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               {r.name}
-            </a>
-            {r.description ? <p className="mt-3 text-sm leading-relaxed">{r.description}</p> : null}
+            </Link>
+            {r.description ? <p className="mt-3 font-brand text-[14px] font-light leading-[1.7] text-brand-secondary">{r.description}</p> : null}
             {Array.isArray(r.historyJson) && r.historyJson.length ? (
-              <pre className="mt-4 max-h-40 overflow-auto border border-hcode-border bg-hcode-gray p-3 text-xs">
-                {JSON.stringify(r.historyJson, null, 2)}
-              </pre>
+              <pre className="mt-4 max-h-40 overflow-auto rounded-sm border border-brand-outline-soft/45 bg-brand-surface-low p-3 font-brand-mono text-[11px] leading-snug text-brand-muted">{JSON.stringify(r.historyJson, null, 2)}</pre>
             ) : null}
           </li>
         ))}
       </ul>
-      {!list?.length ? <p className="mt-10 text-sm text-hcode-muted/80">Add repos from admin.</p> : null}
-    </div>
+      {!list?.length ? <BrandMuted>Add repos from admin.</BrandMuted> : null}
+    </BrandMain>
   );
 }
-

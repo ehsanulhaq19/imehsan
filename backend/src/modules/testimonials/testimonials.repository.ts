@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { TestimonialMedia } from '../../database/entities/testimonial-media.entity';
 import { Testimonial } from '../../database/entities/testimonial.entity';
 
@@ -26,6 +26,27 @@ export class TestimonialsRepository {
       order: { sortOrder: 'ASC', createdAt: 'DESC' },
       relations: { images: { media: true } },
     });
+  }
+
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('t')
+      .leftJoinAndSelect('t.images', 'ti')
+      .leftJoinAndSelect('ti.media', 'm')
+      .orderBy('t.sortOrder', 'ASC')
+      .addOrderBy('t.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('t.authorName ILIKE :s', { s }).orWhere('t.quote ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<Testimonial>) {

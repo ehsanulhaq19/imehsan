@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { VlogComment } from '../../database/entities/vlog-comment.entity';
 import { VlogMedia } from '../../database/entities/vlog-media.entity';
 import { VlogVote } from '../../database/entities/vlog-vote.entity';
@@ -45,6 +45,144 @@ export class VlogsRepository {
     });
   }
 
+  async listAdminPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.vlogs
+      .createQueryBuilder('v')
+      .leftJoinAndSelect('v.mediaItems', 'mi')
+      .leftJoinAndSelect('mi.media', 'm')
+      .orderBy('v.sortOrder', 'ASC')
+      .addOrderBy('v.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('v.slug ILIKE :s', { s }).orWhere('v.heading ILIKE :s', { s });
+        }),
+      );
+    }
+    const [items, total] = await qb.getManyAndCount();
+    return { items, total };
+  }
+
+  async listCommentsPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.vc
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.vlog', 'v')
+      .orderBy('c.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('c.body ILIKE :s', { s: `%${q.trim()}%` }).orWhere(
+            'c.authorName ILIKE :s',
+            { s: `%${q.trim()}%` },
+          );
+        }),
+      );
+    }
+    const [items, total] = await qb.getManyAndCount();
+    return { items, total };
+  }
+
+  async listVotesPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.vv
+      .createQueryBuilder('vo')
+      .leftJoinAndSelect('vo.vlog', 'v')
+      .orderBy('vo.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('v.slug ILIKE :s', { s: `%${q.trim()}%` }).orWhere(
+            'v.heading ILIKE :s',
+            { s: `%${q.trim()}%` },
+          );
+        }),
+      );
+    }
+    const [items, total] = await qb.getManyAndCount();
+    return { items, total };
+  }
+
+  async recentActivity(limit: number) {
+    const comments = await this.vc.find({
+      order: { createdAt: 'DESC' },
+      take: limit,
+      relations: { vlog: true },
+    });
+    const votes = await this.vv.find({
+      order: { createdAt: 'DESC' },
+      take: limit,
+      relations: { vlog: true },
+    });
+    type Row =
+      | {
+          kind: 'comment';
+          at: Date;
+          id: string;
+          vlogSlug: string;
+          vlogHeading: string;
+          authorName: string | null;
+          body: string;
+        }
+      | {
+          kind: 'vote';
+          at: Date;
+          id: string;
+          vlogSlug: string;
+          vlogHeading: string;
+          value: number;
+          visitorKey: string;
+        };
+    const rows: Row[] = [];
+    for (const c of comments) {
+      rows.push({
+        kind: 'comment',
+        at: c.createdAt,
+        id: c.id,
+        vlogSlug: c.vlog?.slug ?? '',
+        vlogHeading: c.vlog?.heading ?? '',
+        authorName: c.authorName,
+        body: c.body,
+      });
+    }
+    for (const vo of votes) {
+      rows.push({
+        kind: 'vote',
+        at: vo.createdAt,
+        id: vo.id,
+        vlogSlug: vo.vlog?.slug ?? '',
+        vlogHeading: vo.vlog?.heading ?? '',
+        value: vo.value,
+        visitorKey: vo.visitorKey,
+      });
+    }
+    rows.sort((a, b) => b.at.getTime() - a.at.getTime());
+    return rows.slice(0, limit);
+  }
+
+  async updateComment(id: string, body: Partial<{ authorName: string | null; body: string }>) {
+    await this.vc.update({ id }, body as never);
+    const row = await this.vc.findOne({ where: { id }, relations: { vlog: true } });
+    if (!row) throw new NotFoundException();
+    return row;
+  }
+
+  async deleteComment(id: string) {
+    await this.vc.delete({ id });
+  }
+
+  async deleteVote(id: string) {
+    await this.vv.delete({ id });
+  }
+
   create(data: Partial<Vlog>) {
     return this.vlogs.save(this.vlogs.create(data));
   }
@@ -65,6 +203,11 @@ export class VlogsRepository {
 
   attach(vlogId: string, mediaId: string, role: string) {
     return this.vm.save(this.vm.create({ vlogId, mediaId, role }));
+  }
+
+  async detachMedia(vlogId: string, pivotId: string) {
+    const r = await this.vm.delete({ id: pivotId, vlogId });
+    if (!r.affected) throw new NotFoundException();
   }
 
   addComment(vlogId: string, authorName: string | undefined, body: string) {

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { EmailConfig } from '../../database/entities/email-config.entity';
 
 @Injectable()
@@ -12,6 +12,27 @@ export class EmailConfigRepository {
 
   list() {
     return this.repo.find({ order: { updatedAt: 'DESC' } });
+  }
+
+  async listPaginated(page: number, limit: number, q?: string) {
+    const skip = (page - 1) * limit;
+    const qb = this.repo
+      .createQueryBuilder('e')
+      .orderBy('e.updatedAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+    if (q?.trim()) {
+      const s = `%${q.trim()}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('e.provider_type ILIKE :s', { s })
+            .orWhere('e.host ILIKE :s', { s })
+            .orWhere('e.username ILIKE :s', { s })
+            .orWhere('e.fromAddress ILIKE :s', { s });
+        }),
+      );
+    }
+    return qb.getManyAndCount();
   }
 
   create(data: Partial<EmailConfig>) {

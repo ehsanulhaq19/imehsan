@@ -1,0 +1,61 @@
+{
+  "backLink": "← Home",
+  "hero": {
+    "eyebrow": "Exclusive availability",
+    "title": "Secure your private strategy consultation.",
+    "leadBeforeName": "Direct access to senior AI full stack leadership: architecture, LLM roadmaps, and execution plans for teams working with ",
+    "leadAfterName": "."
+  },
+  "profileCard": {
+    "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBTRvch7_m4gDbxavQTAO23r-qkZwdzMbEcGoB5uOJIBOxLANPyGpdwvaYtZKTUPB4A-q2EzCR_fFDmxpPNoBwQ8ubNiuF0xDAe52oLddJ505p4_qKbvPmM13knJ_T1FlmhUiMhKQRouISLVrfOswOlVmPCSHuL7x-h7V9GZXDEjTuUvUFNTFb06LK3y9PQxbQB6q4nYa1zWSw0cd_yWfwh-270ISA8I2UwnSa3CjbEX2QnJh_rSJpDp5DvSckUrT6T4kB2TVXE4YA",
+    "imageAlt": "Consultant portrait",
+    "roleTitle": "Senior AI full stack architect",
+    "sessionSubtitle": "60 minute strategic session",
+    "videoChannels": "Google Meet / Zoom",
+    "feeNote": "This session covers system design, LLM integration strategy, technical risk review, and roadmap prioritization."
+  },
+  "preparation": {
+    "heading": "Preparation",
+    "items": [
+      "Name the top technical bottlenecks or product risks.",
+      "Share architecture diagrams or links if they exist.",
+      "List three outcomes you want decided by the end of the hour."
+    ]
+  },
+  "steps": ["1. Select date", "2. Detail info", "3. Confirmation"],
+  "calendar": {
+    "weekdayLabels": ["MO", "TU", "WE", "TH", "FR", "SA", "SU"],
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "selectDatePrompt": "Select a date"
+  },
+  "timeSlots": [
+    { "label": "09:00 AM to 10:00 AM", "value": "09:00" },
+    { "label": "11:30 AM to 12:30 PM", "value": "11:30" },
+    { "label": "02:00 PM to 03:00 PM", "value": "14:00" },
+    { "label": "04:30 PM to 05:30 PM", "value": "16:30" },
+    { "label": "06:00 PM to 07:00 PM", "value": "18:00" }
+  ],
+  "form": {
+    "reasonLabel": "Reason for consultation",
+    "reasonPlaceholder": "Describe objectives, current stack, constraints, and what success looks like.",
+    "organizationLabel": "Organization / name",
+    "organizationPlaceholder": "Acme Inc. or your name",
+    "emailLabel": "Contact email",
+    "emailPlaceholder": "name@domain.com",
+    "phoneLabel": "Phone",
+    "phoneOptional": "(optional)",
+    "phonePlaceholder": "+1 ...",
+    "attachmentsLabel": "Attachments",
+    "attachmentsOptional": "(optional)",
+    "attachmentsHint": "PDF, images, or Word. Max 10MB each.",
+    "submit": "Confirm session",
+    "submitting": "Sending...",
+    "legalNote": "By confirming, you agree to reasonable notice for rescheduling. We follow up by email.",
+    "messages": {
+      "needDateAndSlot": "Please choose a date and a time slot.",
+      "success": "Session requested. You will receive confirmation if email is configured.",
+      "failure": "Could not submit. Check fields and try again."
+    }
+  }
+}

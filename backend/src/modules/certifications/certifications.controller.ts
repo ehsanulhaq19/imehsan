@@ -7,10 +7,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, IsString, MinLength } from 'class-validator';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { CertificationsRepository } from './certifications.repository';
 
@@ -103,8 +105,11 @@ export class CertificationsAdminController {
   constructor(private readonly repo: CertificationsRepository) {}
 
   @Get()
-  list() {
-    return this.repo.listAdmin();
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.repo.listAdminPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
   }
 
   @Post()

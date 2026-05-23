@@ -12,6 +12,11 @@ function vid(): string {
   return k || "";
 }
 
+const fieldCls =
+  "mt-4 w-full border border-brand-outline-soft/55 bg-brand-white px-3 py-2.5 font-brand text-[13px] font-normal normal-case tracking-normal text-brand-fg outline-none placeholder:text-brand-muted/50 focus:border-brand-tertiary/65";
+
+const h2Cls = "font-brand text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-fg";
+
 export function VlogEngagement({
   slug,
   shareUrl,
@@ -61,102 +66,78 @@ export function VlogEngagement({
     }
   };
 
+  const codeCls =
+    "break-all rounded-sm border border-brand-outline-soft/40 bg-brand-surface-low px-2.5 py-1.5 font-brand-mono text-[11px] text-brand-muted";
+
   return (
-    <div className="mt-10 space-y-8 border border-hcode-border bg-white p-6 md:p-8">
+    <div className="mt-10 space-y-10 rounded-sm border border-brand-outline-soft/40 bg-brand-white/92 p-6 shadow-[0_20px_50px_-32px_rgb(11_28_48_/0.25)] backdrop-blur-sm md:p-9">
       <div>
-        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-black">Share</h2>
-        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-black">Page URL</p>
+        <h2 className={h2Cls}>Share</h2>
+        <p className="mt-6 font-brand-mono text-[10px] uppercase tracking-[0.2em] text-brand-secondary">Page URL</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <code className="break-all border border-hcode-border bg-hcode-gray px-2 py-1 text-xs">{shareUrl}</code>
-          <button type="button" className="hcode-link text-[11px] font-semibold uppercase tracking-wider" onClick={() => void copy(shareUrl)}>
+          <code className={codeCls}>{shareUrl}</code>
+          <button type="button" className="brand-link font-brand-mono text-[10px] font-semibold uppercase tracking-[0.2em]" onClick={() => void copy(shareUrl)}>
             Copy
           </button>
         </div>
-        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-black">Direct media URL</p>
+        <p className="mt-5 font-brand-mono text-[10px] uppercase tracking-[0.2em] text-brand-secondary">Direct media URL</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <code className="break-all border border-hcode-border bg-hcode-gray px-2 py-1 text-xs">{fileUrl}</code>
-          <button type="button" className="hcode-link text-[11px] font-semibold uppercase tracking-wider" onClick={() => void copy(fileUrl)}>
+          <code className={codeCls}>{fileUrl}</code>
+          <button type="button" className="brand-link font-brand-mono text-[10px] font-semibold uppercase tracking-[0.2em]" onClick={() => void copy(fileUrl)}>
             Copy
           </button>
         </div>
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-semibold uppercase tracking-wider">
-          <a
-            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="hcode-link"
-          >
+        <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2 font-brand-mono text-[10px] font-semibold uppercase tracking-[0.18em]">
+          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" className="brand-link">
             LinkedIn
           </a>
-          <a
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="hcode-link"
-          >
+          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" className="brand-link">
             X
           </a>
-          <a
-            href={`https://www.xing.com/spi/shares/new?url=${encodeURIComponent(shareUrl)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="hcode-link"
-          >
+          <a href={`https://www.xing.com/spi/shares/new?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" className="brand-link">
             Xing
           </a>
-          <a href={`https://www.instagram.com/`} target="_blank" rel="noreferrer" className="hcode-link">
+          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" className="brand-link">
             Instagram
           </a>
         </div>
       </div>
 
       <div>
-        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-black">Reactions</h2>
-        <div className="mt-4 flex gap-3">
+        <h2 className={h2Cls}>Reactions</h2>
+        <div className="mt-5 flex flex-wrap gap-3">
           <button
             type="button"
-            className="border-2 border-black bg-black px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-white hover:bg-transparent hover:text-black"
+            className="rounded-sm border border-transparent bg-brand-secondary px-5 py-2.5 font-brand text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-90"
             onClick={() => void vote(1)}
           >
             Like
           </button>
           <button
             type="button"
-            className="border-2 border-hcode-border bg-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-black hover:border-black"
+            className="rounded-sm border border-brand-outline-soft/60 bg-transparent px-5 py-2.5 font-brand text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-fg transition-colors hover:border-brand-tertiary/50"
             onClick={() => void vote(-1)}
           >
             Dislike
           </button>
         </div>
-        {votes ? (
-          <p className="mt-3 text-sm">
-            Likes {votes.likes} · Dislikes {votes.dislikes}
-          </p>
-        ) : null}
+        {votes ? <p className="mt-4 font-brand text-[14px] font-light text-brand-secondary">Likes {votes.likes} · Dislikes {votes.dislikes}</p> : null}
       </div>
 
       <div>
-        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-black">Comment</h2>
-        <input
-          className="mt-4 hcode-input normal-case tracking-normal"
-          placeholder="Name (optional)"
-          value={authorName}
-          onChange={(e) => setAuthorName(e.target.value)}
-        />
-        <textarea
-          className="mt-3 hcode-input normal-case tracking-normal"
-          placeholder="Your comment"
-          rows={4}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button type="button" className="mt-3 hcode-btn border-hcode-violet bg-hcode-violet hover:text-hcode-violet" onClick={() => void postComment()}>
+        <h2 className={h2Cls}>Comment</h2>
+        <input className={`${fieldCls} mt-6`} placeholder="Name (optional)" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
+        <textarea className={`${fieldCls} mt-4 resize-y leading-relaxed`} placeholder="Your comment" rows={4} value={comment} onChange={(e) => setComment(e.target.value)} />
+        <button
+          type="button"
+          className="mt-4 rounded-sm bg-brand-secondary px-6 py-2.5 font-brand text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-90"
+          onClick={() => void postComment()}
+        >
           Post
         </button>
       </div>
 
-      {msg ? <p className="text-sm">{msg}</p> : null}
+      {msg ? <p className="font-brand text-[14px] font-light text-brand-secondary">{msg}</p> : null}
     </div>
   );
 }
-

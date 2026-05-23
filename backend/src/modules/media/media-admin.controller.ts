@@ -1,7 +1,11 @@
 import {
   BadRequestException,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -12,6 +16,7 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Request } from 'express';
 import { v4 as uuid } from 'uuid';
+import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { MediaService } from './media.service';
 
@@ -19,6 +24,14 @@ import { MediaService } from './media.service';
 @UseGuards(AdminJwtAuthGuard)
 export class MediaAdminController {
   constructor(private readonly mediaService: MediaService) {}
+
+  @Get()
+  async list(@Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [items, total] = await this.mediaService.listPaginated(page, limit, query.q);
+    return { items, meta: paginatedMeta(total, page, limit) };
+  }
 
   @Post('upload')
   @UseInterceptors(
@@ -50,5 +63,10 @@ export class MediaAdminController {
       uploadedById: req.user.id,
     });
     return { id: saved.id, url: publicPath, mimeType: saved.mimeType };
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.mediaService.deleteOne(id);
   }
 }

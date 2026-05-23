@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { assetUrl } from "@/api/client";
 import { fetchCertificationsList, type CertificationListRow } from "@/api/certifications";
+import { BrandBack, BrandH1, BrandMain, BrandMuted } from "@/components/brand/BrandPage";
 
 export default async function CertificationsPage() {
   const list = await fetchCertificationsList<CertificationListRow[]>();
@@ -13,45 +14,37 @@ export default async function CertificationsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-14 text-hcode-muted md:py-20">
-      <Link href="/" className="hcode-link text-[11px] font-semibold uppercase tracking-[0.2em]">
-        ← Home
-      </Link>
-      <h1 className="font-display mt-8 text-2xl uppercase text-black md:text-3xl">Certifications</h1>
-      <ul className="mt-10 space-y-8">
+    <BrandMain>
+      <BrandBack href="/">← Home</BrandBack>
+      <BrandH1>Certifications</BrandH1>
+      <ul className="mt-12 space-y-8">
         {(list ?? []).map((c) => (
-          <li key={c.id} className="border border-hcode-border bg-white p-5 md:flex md:gap-6">
-            <div className="relative mb-4 h-28 w-full shrink-0 overflow-hidden border border-hcode-border bg-hcode-gray md:mb-0 md:h-32 md:w-40">
+          <li key={c.id} className="brand-card flex flex-col gap-6 p-6 backdrop-blur-sm md:flex-row md:items-start md:gap-8">
+            <div className="relative h-32 w-full shrink-0 overflow-hidden border border-brand-outline-soft/35 bg-brand-surface md:h-36 md:w-44">
               {c.thumbnailUrl ? (
                 <Image
                   src={assetUrl(c.thumbnailUrl)}
                   alt=""
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 160px"
+                  sizes="(max-width: 768px) 100vw, 176px"
                   unoptimized
                 />
               ) : null}
             </div>
             <div className="min-w-0 flex-1">
-              <Link
-                href={`/certifications/${c.slug}`}
-                className="font-display text-lg font-normal uppercase text-black hover:text-hcode-violet"
-              >
+              <Link href={`/certifications/${c.slug}`} className="font-brand text-[17px] font-semibold uppercase tracking-[0.06em] text-brand-fg transition-colors hover:text-brand-tertiary">
                 {c.heading}
               </Link>
-              {c.detail ? <p className="mt-3 text-sm leading-relaxed">{preview(c.detail)}</p> : null}
-              <Link
-                href={`/certifications/${c.slug}`}
-                className="mt-3 inline-block hcode-link text-[11px] font-semibold uppercase tracking-[0.2em]"
-              >
-                Read more
+              {c.detail ? <p className="mt-3 font-brand text-[14px] font-light leading-[1.72] text-brand-secondary">{preview(c.detail)}</p> : null}
+              <Link href={`/certifications/${c.slug}`} className="brand-link mt-4 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.2em]">
+                Read more →
               </Link>
             </div>
           </li>
         ))}
       </ul>
-      {!list?.length ? <p className="mt-10 text-sm text-hcode-muted/80">No certifications published yet.</p> : null}
-    </div>
+      {!list?.length ? <BrandMuted>No certifications published yet.</BrandMuted> : null}
+    </BrandMain>
   );
 }
