@@ -58,7 +58,7 @@ export function ThemeToggle({
         type="button"
         onClick={toggle}
         aria-label={label}
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded text-black transition hover:border-black dark:border-neutral-600 dark:text-neutral-100 dark:hover:border-neutral-400 ${className}`}
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] text-brand-fg transition-colors hover:border-brand-tertiary hover:text-brand-tertiary dark:border-neutral-600 dark:text-neutral-100 dark:hover:border-brand-tertiary ${className}`}
       >
         {theme === "dark" ? <IconSun className="h-5 w-5" /> : <IconMoon className="h-5 w-5" />}
       </button>
@@ -69,7 +69,7 @@ export function ThemeToggle({
     <button
       type="button"
       onClick={toggle}
-      className={`rounded border border-hcode-border bg-[var(--card-bg)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-foreground transition hover:border-black dark:hover:border-neutral-500 ${className}`}
+      className={`rounded-lg border border-[var(--card-border)] bg-[var(--card-bg)] px-3 py-2 font-brand text-fp-caption font-semibold uppercase tracking-wider text-foreground transition-colors hover:border-brand-tertiary hover:text-brand-fg dark:border-neutral-600 dark:hover:border-brand-tertiary dark:hover:text-neutral-50 ${className}`}
       aria-label={label}
     >
       {theme === "dark" ? "Light" : "Dark"}

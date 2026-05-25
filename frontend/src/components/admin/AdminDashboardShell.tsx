@@ -10,9 +10,7 @@ export const ADMIN_NAV = [
   { href: "/admin/sessions", label: "Sessions" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/case-studies", label: "Case studies" },
-  { href: "/admin/vlogs", label: "Vlogs" },
-  { href: "/admin/vlog-comments", label: "Vlog comments" },
-  { href: "/admin/vlog-votes", label: "Vlog votes" },
+  { href: "/admin/vlogs", label: "Vlogs & engagement" },
   { href: "/admin/certifications", label: "Certifications" },
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/git-repos", label: "Repositories" },
@@ -39,7 +37,7 @@ export function AdminDashboardShell({ children }: { children: ReactNode }) {
     } catch {
       return "";
     }
-  }, [ready]);
+  }, []);
 
   useEffect(() => {
     const t = sessionStorage.getItem("admin_token");
@@ -54,7 +52,7 @@ export function AdminDashboardShell({ children }: { children: ReactNode }) {
   }
 
   if (!ready) {
-    return <div className="min-h-screen bg-background" />;
+    return <div className="min-h-screen bg-background antialiased" />;
   }
 
   const navLinks = (
@@ -65,8 +63,10 @@ export function AdminDashboardShell({ children }: { children: ReactNode }) {
           <Link
             key={href}
             href={href}
-            className={`block rounded px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] ${
-              active ? "bg-black text-white dark:bg-neutral-100 dark:text-black" : "text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+            className={`block rounded-lg px-3 py-2.5 font-brand text-fp-nav font-semibold uppercase tracking-wide transition-colors ${
+              active
+                ? "bg-brand-fg text-white shadow-sm dark:bg-brand-tertiary dark:text-white"
+                : "text-brand-secondary hover:bg-brand-white dark:text-neutral-300 dark:hover:bg-white/10"
             }`}
             onClick={() => setDrawer(false)}
           >
@@ -78,27 +78,30 @@ export function AdminDashboardShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-[var(--card-border)] bg-[var(--admin-sidebar)] dark:border-neutral-800 md:flex">
-        <div className="border-b border-[var(--card-border)] px-4 py-4 dark:border-neutral-800">
-          <p className="font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-black dark:text-neutral-100">Dashboard</p>
-          {userEmail ? <p className="mt-2 truncate text-[10px] text-hcode-muted">{userEmail}</p> : null}
+    <div className="flex min-h-screen bg-background font-brand text-fp-body text-foreground antialiased">
+      <aside className="hidden w-56 shrink-0 flex-col border-r border-[var(--card-border)] bg-[var(--admin-sidebar)] backdrop-blur-sm md:flex dark:border-neutral-700/70">
+        <div className="border-b border-[var(--card-border)] px-4 py-4 dark:border-neutral-700/70">
+          <p className="font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.2em] text-brand-fg dark:text-neutral-50">Dashboard</p>
+          {userEmail ? <p className="mt-2 truncate font-brand text-fp-caption text-hcode-muted">{userEmail}</p> : null}
         </div>
-        <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">{navLinks}</nav>
-        <div className="space-y-2 border-t border-[var(--card-border)] p-3 dark:border-neutral-800">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3">{navLinks}</nav>
+        <div className="space-y-2 border-t border-[var(--card-border)] p-3 dark:border-neutral-700/70">
           <ThemeToggle className="w-full" />
-          <button type="button" className="hcode-btn-outline w-full py-2 text-[10px]" onClick={signOut}>
+          <button type="button" className="hcode-btn-outline w-full py-2.5 font-brand text-fp-caption" onClick={signOut}>
             Sign out
           </button>
-          <Link href="/" className="block text-center text-[10px] font-semibold uppercase tracking-wider text-hcode-violet">
+          <Link
+            href="/"
+            className="block text-center font-brand text-fp-caption font-semibold uppercase tracking-wider text-brand-tertiary transition-colors hover:text-brand-fg dark:hover:text-cyan-200"
+          >
             Site home
           </Link>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 dark:border-neutral-800 md:hidden">
-          <button type="button" className="hcode-btn-outline px-3 py-2 text-[10px]" onClick={() => setDrawer(true)}>
+        <header className="flex items-center justify-between gap-3 border-b border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 md:hidden dark:border-neutral-700/70">
+          <button type="button" className="hcode-btn-outline px-4 py-2 font-brand text-fp-caption" onClick={() => setDrawer(true)}>
             Menu
           </button>
           <ThemeToggle />
@@ -106,17 +109,21 @@ export function AdminDashboardShell({ children }: { children: ReactNode }) {
 
         {drawer ? (
           <div className="fixed inset-0 z-50 md:hidden">
-            <button type="button" className="absolute inset-0 bg-black/40" aria-label="Close menu" onClick={() => setDrawer(false)} />
-            <div className="absolute left-0 top-0 flex h-full w-[min(100%,280px)] flex-col bg-[var(--admin-sidebar)] shadow-xl">
-              <div className="flex items-center justify-between border-b border-[var(--card-border)] px-4 py-3 dark:border-neutral-800">
-                <span className="font-display text-xs uppercase tracking-[0.15em]">Menu</span>
-                <button type="button" className="text-[10px] uppercase text-hcode-muted" onClick={() => setDrawer(false)}>
+            <button type="button" className="absolute inset-0 bg-brand-fg/40 backdrop-blur-[2px]" aria-label="Close menu" onClick={() => setDrawer(false)} />
+            <div className="site-drawer-panel absolute left-0 top-0 flex h-full w-[min(100%,280px)] flex-col bg-[var(--admin-sidebar)] shadow-xl dark:bg-[var(--admin-sidebar)]">
+              <div className="flex items-center justify-between border-b border-[var(--card-border)] px-4 py-3 dark:border-neutral-700/70">
+                <span className="font-brand-mono text-fp-caption font-semibold uppercase tracking-[0.12em] text-brand-fg dark:text-neutral-100">Menu</span>
+                <button
+                  type="button"
+                  className="font-brand text-fp-caption uppercase text-hcode-muted transition-colors hover:text-brand-fg"
+                  onClick={() => setDrawer(false)}
+                >
                   Close
                 </button>
               </div>
-              <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">{navLinks}</nav>
-              <div className="border-t border-[var(--card-border)] p-3 dark:border-neutral-800">
-                <button type="button" className="hcode-btn-outline mb-2 w-full py-2 text-[10px]" onClick={signOut}>
+              <nav className="flex-1 space-y-1 overflow-y-auto p-3">{navLinks}</nav>
+              <div className="border-t border-[var(--card-border)] p-3 dark:border-neutral-700/70">
+                <button type="button" className="hcode-btn-outline mb-2 w-full py-2.5 font-brand text-fp-caption" onClick={signOut}>
                   Sign out
                 </button>
               </div>

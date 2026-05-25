@@ -31,8 +31,9 @@ const config: Config = {
           white: "#ffffff",
         },
         hcode: {
-          violet: "#6c407e",
-          muted: "var(--foreground)",
+          /** Matches public `brand-tertiary` for unified admin accents */
+          violet: "#006591",
+          muted: "var(--foreground-muted)",
           border: "var(--card-border)",
           gray: "var(--hcode-gray-surface)",
           dark: "#252525",

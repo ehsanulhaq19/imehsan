@@ -128,9 +128,17 @@ export default function AdminOverviewPage() {
     ? [
         { label: "Projects", value: stats.projects, href: "/admin/projects" },
         { label: "Case studies", value: stats.caseStudies, href: "/admin/case-studies" },
-        { label: "Vlogs", value: stats.vlogs, href: "/admin/vlogs" },
-        { label: "Comments", value: stats.vlogComments, href: "/admin/vlog-comments" },
-        { label: "Votes", value: stats.vlogVotes, href: "/admin/vlog-votes" },
+        { label: "Vlogs & engagement", value: stats.vlogs, href: "/admin/vlogs" },
+        {
+          label: "Comment rows",
+          value: stats.vlogComments,
+          href: "/admin/vlogs",
+        },
+        {
+          label: "Reaction rows",
+          value: stats.vlogVotes,
+          href: "/admin/vlogs",
+        },
         { label: "Certifications", value: stats.certifications, href: "/admin/certifications" },
         { label: "Testimonials", value: stats.testimonials, href: "/admin/testimonials" },
         { label: "Repositories", value: stats.gitRepos, href: "/admin/git-repos" },
@@ -148,8 +156,8 @@ export default function AdminOverviewPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl uppercase tracking-[0.12em] text-black dark:text-neutral-100">Overview</h1>
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-hcode-muted">
+        <h1 className="font-brand-display text-fp-section font-bold uppercase tracking-tight text-brand-fg dark:text-neutral-50">Overview</h1>
+        <p className="font-brand mt-2 max-w-2xl text-fp-small leading-relaxed text-hcode-muted">
           Signed-in system users only. Use the sidebar to manage content. Quick links match the primary entities in the API.
         </p>
       </div>
@@ -159,48 +167,52 @@ export default function AdminOverviewPage() {
           <Link
             key={c.label}
             href={c.href}
-            className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 transition hover:border-black dark:border-neutral-700 dark:hover:border-neutral-500"
+            className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 transition-colors hover:border-brand-tertiary/55 dark:border-neutral-700/70 dark:hover:border-brand-tertiary/50"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-hcode-muted">{c.label}</p>
-            <p className="mt-2 font-display text-2xl text-black dark:text-neutral-100">{c.value}</p>
+            <p className="font-brand text-fp-caption font-semibold uppercase tracking-[0.12em] text-hcode-muted">{c.label}</p>
+            <p className="font-brand-display mt-2 text-fp-sub font-bold text-brand-fg dark:text-neutral-50">{c.value}</p>
           </Link>
         ))}
       </section>
 
       {(sessionCountRange !== null || pageHitsRange !== null) && (
         <section className="grid gap-3 sm:grid-cols-2">
-          <div className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-hcode-muted">
+          <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70">
+            <p className="font-brand text-fp-caption font-semibold uppercase tracking-[0.12em] text-hcode-muted">
               Unique visitor-days (range)
             </p>
-            <p className="mt-2 font-display text-3xl text-black dark:text-neutral-100">{sessionCountRange ?? "—"}</p>
-            <p className="mt-2 text-[10px] leading-snug text-hcode-muted">
+            <p className="font-brand-display mt-2 text-fp-section font-bold text-brand-fg dark:text-neutral-50">
+              {sessionCountRange ?? "-"}
+            </p>
+            <p className="font-brand mt-2 text-fp-caption leading-snug text-hcode-muted">
               Same visitor, same UTC day = one session. Different days count separately.
             </p>
           </div>
-          <div className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-hcode-muted">Page views (range)</p>
-            <p className="mt-2 font-display text-3xl text-black dark:text-neutral-100">{pageHitsRange ?? "—"}</p>
-            <p className="mt-2 text-[10px] leading-snug text-hcode-muted">
+          <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70">
+            <p className="font-brand text-fp-caption font-semibold uppercase tracking-[0.12em] text-hcode-muted">Page views (range)</p>
+            <p className="font-brand-display mt-2 text-fp-section font-bold text-brand-fg dark:text-neutral-50">
+              {pageHitsRange ?? "-"}
+            </p>
+            <p className="font-brand mt-2 text-fp-caption leading-snug text-hcode-muted">
               Each path opened counts separately (by time the page was recorded).
             </p>
           </div>
         </section>
       )}
 
-      <section className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700 md:p-6">
+      <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-black dark:text-neutral-100">
+            <h2 className="font-brand-mono text-fp-caption font-semibold uppercase tracking-[0.14em] text-brand-fg dark:text-neutral-50">
               Daily unique visitors
             </h2>
             {rangeLabel ? (
-              <p className="mt-1 text-[10px] text-hcode-muted">
+              <p className="font-brand mt-1 text-fp-caption text-hcode-muted">
                 {rangeLabel} · distinct visitors starting a session each UTC day
               </p>
             ) : null}
           </div>
-          <div className="flex flex-wrap gap-3 text-[10px] font-semibold uppercase tracking-wider">
+          <div className="flex flex-wrap gap-3 font-brand text-fp-caption font-semibold uppercase tracking-wider">
             <label className="flex flex-col gap-1">
               From
               <input type="date" className="hcode-input normal-case" value={from} onChange={(e) => setFrom(e.target.value)} />
@@ -213,18 +225,18 @@ export default function AdminOverviewPage() {
         </div>
         <div className="mt-8 flex h-44 items-end gap-1 overflow-x-auto pb-2">
           {daily.length === 0 ? (
-            <p className="text-xs text-hcode-muted">No session data in this range.</p>
+            <p className="font-brand text-fp-small text-hcode-muted">No session data in this range.</p>
           ) : (
             daily.map((d) => {
               const h = Math.max(6, Math.round((d.count / maxDaily) * 140));
               return (
               <div key={d.date} className="flex min-w-[28px] flex-1 flex-col items-center justify-end gap-1">
                 <div
-                  className="w-full max-w-[36px] rounded-t bg-hcode-violet/90 dark:bg-hcode-violet/70"
+                  className="w-full max-w-[36px] rounded-t bg-brand-tertiary/90 shadow-sm dark:bg-brand-tertiary/75"
                   style={{ height: `${h}px` }}
                   title={`${d.date}: ${d.count}`}
                 />
-                <span className="text-[8px] text-hcode-muted md:text-[9px]">{d.date.slice(5)}</span>
+                <span className="font-brand-mono text-fp-caption text-hcode-muted">{d.date.slice(5)}</span>
               </div>
               );
             })
@@ -232,27 +244,27 @@ export default function AdminOverviewPage() {
         </div>
       </section>
 
-      <section className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700 md:p-6">
+      <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70 md:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-black dark:text-neutral-100">
+            <h2 className="font-brand-mono text-fp-caption font-semibold uppercase tracking-[0.14em] text-brand-fg dark:text-neutral-50">
               Top paths in range
             </h2>
-            <p className="mt-1 text-[10px] text-hcode-muted">
+            <p className="font-brand mt-1 text-fp-caption text-hcode-muted">
               Page views aggregated by path for the same date range as above.
             </p>
           </div>
-          <Link href="/admin/sessions" className="hcode-link text-[10px] font-semibold uppercase tracking-wider">
+          <Link href="/admin/sessions" className="hcode-link font-brand text-fp-caption font-semibold uppercase tracking-wider">
             All visitor sessions →
           </Link>
         </div>
         {topPaths.length === 0 ? (
-          <p className="mt-4 text-xs text-hcode-muted">No page views in this range.</p>
+          <p className="font-brand mt-4 text-fp-small text-hcode-muted">No page views in this range.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[320px] border-collapse text-left text-[11px]">
+            <table className="w-full min-w-[320px] border-collapse text-left font-brand text-fp-small">
               <thead>
-                <tr className="border-b border-[var(--card-border)] text-[10px] uppercase tracking-wider text-hcode-muted dark:border-neutral-800">
+                <tr className="border-b border-[var(--card-border)] text-fp-caption uppercase tracking-wider text-hcode-muted dark:border-neutral-800">
                   <th className="py-2 pr-4 font-semibold">Path</th>
                   <th className="py-2 font-semibold">Views</th>
                 </tr>
@@ -260,10 +272,12 @@ export default function AdminOverviewPage() {
               <tbody>
                 {topPaths.map((row) => (
                   <tr key={row.path} className="border-b border-[var(--card-border)] last:border-0 dark:border-neutral-800">
-                    <td className="max-w-[70vw] py-2 pr-4 font-mono text-[10px] text-foreground md:max-w-xl">
+                    <td className="max-w-[70vw] py-2 pr-4 font-brand-mono text-fp-caption text-foreground md:max-w-xl">
                       <span className="break-all">{row.path}</span>
                     </td>
-                    <td className="py-2 tabular-nums text-black dark:text-neutral-100">{row.count}</td>
+                    <td className="py-2 font-brand-display tabular-nums text-fp-body font-semibold text-brand-fg dark:text-neutral-50">
+                      {row.count}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -273,17 +287,17 @@ export default function AdminOverviewPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700 md:p-6">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-black dark:text-neutral-100">
+        <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70 md:p-6">
+          <h2 className="font-brand-mono text-fp-caption font-semibold uppercase tracking-[0.14em] text-brand-fg dark:text-neutral-50">
             Recent vlog activity
           </h2>
-          <ul className="mt-4 space-y-3 text-[11px]">
+          <ul className="font-brand mt-4 space-y-3 text-fp-small">
             {activity.length === 0 ? (
               <li className="text-hcode-muted">No recent comments or votes.</li>
             ) : (
               activity.map((a) => (
                 <li key={`${a.kind}-${a.id}`} className="border-b border-[var(--card-border)] pb-3 last:border-0 dark:border-neutral-800">
-                  <span className="font-semibold uppercase tracking-wider text-hcode-violet">
+                  <span className="font-semibold uppercase tracking-wide text-brand-tertiary">
                     {a.kind === "comment" ? "Comment" : a.value === 1 ? "Like" : "Dislike"}
                   </span>
                   <span className="text-hcode-muted"> · {new Date(a.at).toLocaleString()}</span>
@@ -302,11 +316,11 @@ export default function AdminOverviewPage() {
             )}
           </ul>
         </div>
-        <div className="border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700 md:p-6">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-black dark:text-neutral-100">
+        <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 dark:border-neutral-700/70 md:p-6">
+          <h2 className="font-brand-mono text-fp-caption font-semibold uppercase tracking-[0.14em] text-brand-fg dark:text-neutral-50">
             Sections
           </h2>
-          <ul className="mt-4 grid gap-2 text-[11px] sm:grid-cols-2">
+          <ul className="font-brand mt-4 grid gap-2 text-fp-small sm:grid-cols-2">
             {ADMIN_NAV.filter((n) => n.href !== "/admin").map((n) => (
               <li key={n.href}>
                 <Link href={n.href} className="hcode-link font-semibold uppercase tracking-wider">

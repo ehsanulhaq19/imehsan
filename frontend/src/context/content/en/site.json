@@ -24,7 +24,6 @@
     { "href": "/", "label": "Home" },
     { "href": "/projects", "label": "Projects" },
     { "href": "/case-studies", "label": "Case studies" },
-    { "href": "/git-repos", "label": "Research" },
     { "href": "/certifications", "label": "Certs" },
     { "href": "/vlogs", "label": "Vlogs" },
     { "href": "/about", "label": "About" }

@@ -1,8 +1,11 @@
 "use client";
 
+import { SlugHoverGridCard } from "@/components/card";
+import Image from "next/image";
 import Link from "next/link";
 import { content } from "@/lib/content-registry";
 import { Scroll3DSection } from "./Scroll3DSection";
+import { assetUrl } from "@/api/client";
 
 const { landing: L, profile: P } = content;
 
@@ -11,6 +14,8 @@ type Item = {
   title: string;
   blurb: string;
   href: string;
+  image?: string;
+  video?: string;
 };
 
 type Repo = { id: string; name: string; url: string };
@@ -21,7 +26,7 @@ export type LandingSectionsProps = {
   repos: Repo[];
   vlogs: Item[];
   certifications: Item[];
-  testimonials: { id: string; authorName: string; quote: string }[];
+  testimonials: { id: string; authorName: string; quote: string; image?: string }[];
 };
 
 function IconArrow({ className }: { className?: string }) {
@@ -61,6 +66,7 @@ function SectionShell({
 export function LandingSections({
   projects,
   caseStudies,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- passed from home; repos block is commented out
   repos,
   vlogs,
   certifications,
@@ -194,17 +200,19 @@ export function LandingSections({
           {!projects.length ? (
             <p className="font-brand text-brand-secondary">{S.projects.empty}</p>
           ) : (
-            <div className="grid gap-8 md:grid-cols-12 md:gap-10">
-              <div className="card-3d-tilt md:col-span-8 md:min-h-[28rem]">
-                <FeaturedProjectCard item={projects[0]} emphasize copy={S.projects} />
-              </div>
-              <div className="flex flex-col gap-8 md:col-span-4">
-                {projects.slice(1, 3).map((p) => (
-                  <div key={p.id} className="card-3d-tilt flex-1">
-                    <CompactCard item={p} copy={S.projects} />
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+              {projects.slice(0, 6).map((p, i) => (
+                <SlugHoverGridCard
+                  key={p.id}
+                  href={p.href}
+                  title={p.title}
+                  description={p.blurb}
+                  imageUrl={p.image}
+                  videoUrl={p.video}
+                  delay={Math.min(i * 0.05, 0.28)}
+                  imagePriority={i === 0}
+                />
+              ))}
             </div>
           )}
         </SectionShell>
@@ -221,29 +229,26 @@ export function LandingSections({
             </Link>
           }
         >
-          <div className="grid gap-16 md:gap-28">
-            {caseStudies.slice(0, 2).map((c, i) => (
-              <article key={c.id} className={`card-3d-tilt grid gap-10 md:grid-cols-12 md:gap-14 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}>
-                <div className="aspect-[16/10] overflow-hidden rounded-sm border border-brand-outline-soft/30 bg-brand-surface md:col-span-7">
-                  <div className="flex h-full w-full flex-col justify-end bg-gradient-to-br from-brand-tertiary/15 via-brand-bg to-brand-surface p-10">
-                    <span className="font-brand-mono text-fp-tag uppercase text-brand-muted">{c.href.replace(/^\//, "")}</span>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center md:col-span-5">
-                  <h3 className="font-brand-display text-fp-sub font-bold text-brand-fg">{c.title}</h3>
-                  <p className="mt-5 font-brand text-fp-body leading-relaxed text-brand-secondary">{c.blurb}</p>
-                  <Link href={c.href} className="mt-8 inline-flex w-max items-center gap-2 font-brand text-fp-small font-semibold text-brand-tertiary hover:underline">
-                    {S.caseStudies.readLink} <IconArrow className="h-4 w-4" />
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-          {caseStudies.length === 0 ? <p className="font-brand text-brand-secondary">{S.caseStudies.empty}</p> : null}
+          {caseStudies.length === 0 ? (
+            <p className="font-brand text-brand-secondary">{S.caseStudies.empty}</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-6">
+              {caseStudies.slice(0, 6).map((c, i) => (
+                <SlugHoverGridCard
+                  key={c.id}
+                  href={c.href}
+                  title={c.title}
+                  description={c.blurb}
+                  imageUrl={c.image}
+                  delay={Math.min(i * 0.05, 0.3)}
+                />
+              ))}
+            </div>
+          )}
         </SectionShell>
       </Scroll3DSection>
 
-      <Scroll3DSection className="py-20 md:py-28">
+      {/* <Scroll3DSection className="py-20 md:py-28">
         <SectionShell eyebrow={S.repos.eyebrow} title={S.repos.title} lead={undefined}>
           {repos.length === 0 ? (
             <p className="font-brand text-brand-secondary">{S.repos.empty}</p>
@@ -282,7 +287,7 @@ export function LandingSections({
             </div>
           )}
         </SectionShell>
-      </Scroll3DSection>
+      </Scroll3DSection> */}
 
       <Scroll3DSection className="border-y border-brand-outline-soft/20 bg-brand-surface-low py-20 md:py-24">
         <SectionShell
@@ -298,16 +303,19 @@ export function LandingSections({
           {vlogs.length === 0 ? (
             <p className="font-brand text-brand-secondary">{S.vlogs.empty}</p>
           ) : (
-            <ul className="grid gap-8 sm:grid-cols-2">
-              {vlogs.slice(0, 4).map((v) => (
-                <li key={v.id} className="card-3d-tilt rounded-sm border border-brand-outline-soft/25 bg-brand-white/95 p-7">
-                  <Link href={v.href} className="font-brand-display text-fp-card font-semibold text-brand-fg hover:text-brand-tertiary">
-                    {v.title}
-                  </Link>
-                  <p className="mt-2 font-brand text-fp-small text-brand-secondary">{S.vlogs.cardSub}</p>
-                </li>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+              {vlogs.slice(0, 6).map((v, i) => (
+                <SlugHoverGridCard
+                  key={v.id}
+                  href={v.href}
+                  title={v.title}
+                  description={v.blurb}
+                  imageUrl={v.image}
+                  videoUrl={v.video}
+                  delay={Math.min(i * 0.05, 0.3)}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </SectionShell>
       </Scroll3DSection>
@@ -325,15 +333,16 @@ export function LandingSections({
           {certifications.length === 0 ? (
             <p className="font-brand text-brand-secondary">{S.certifications.empty}</p>
           ) : (
-            <div className="flex flex-wrap gap-4 md:gap-5">
-              {certifications.slice(0, 6).map((c) => (
-                <Link
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+              {certifications.slice(0, 6).map((c, i) => (
+                <SlugHoverGridCard
                   key={c.id}
                   href={c.href}
-                  className="card-3d-tilt rounded-full border border-brand-outline-soft/40 bg-brand-white/90 px-6 py-3 font-brand text-fp-small font-medium text-brand-fg hover:border-brand-tertiary/60 hover:text-brand-tertiary"
-                >
-                  {c.title}
-                </Link>
+                  title={c.title}
+                  description={c.blurb}
+                  imageUrl={c.image}
+                  delay={Math.min(i * 0.045, 0.28)}
+                />
               ))}
             </div>
           )}
@@ -345,19 +354,31 @@ export function LandingSections({
           {testimonials.length === 0 ? (
             <p className="font-brand text-brand-secondary">{S.testimonials.empty}</p>
           ) : (
-            <div className="grid gap-10 md:grid-cols-3">
-              {testimonials.slice(0, 6).map((t) => (
-                <blockquote
-                  key={t.id}
-                  className="card-3d-tilt rounded-lg border border-brand-outline-soft/30 bg-brand-white/92 p-8 shadow-[0_26px_60px_-32px_rgb(11_28_48_/0.5)] backdrop-blur-sm"
-                >
-                  <p className="font-brand-accent text-fp-body font-light italic leading-relaxed text-brand-muted">&ldquo;{t.quote}&rdquo;</p>
-                  <footer className="mt-6 font-brand-mono text-fp-tag font-medium uppercase text-brand-tertiary">
-                    {S.testimonials.attributionSeparator}
-                    {t.authorName}
-                  </footer>
-                </blockquote>
-              ))}
+            <div className="columns-1 gap-x-10 [column-gap:2.25rem] md:columns-2 lg:columns-3">
+              {testimonials.slice(0, 6).map((t) => {
+                const img = t.image ? assetUrl(t.image) : null;
+                return (
+                  <blockquote
+                    key={t.id}
+                    className="card-3d-tilt mb-8 break-inside-avoid rounded-2xl border border-brand-outline-soft/25 bg-brand-white/[0.93] shadow-[0_30px_70px_-42px_rgb(11_28_48_/0.52)]"
+                  >
+                    {img ? (
+                      <div className="relative aspect-[16/11] bg-brand-muted/10">
+                        <Image src={img} alt="" fill className="object-cover" sizes="360px" unoptimized />
+                      </div>
+                    ) : (
+                      <div className="h-28 bg-gradient-to-br from-brand-tertiary/15 to-brand-bg" />
+                    )}
+                    <div className="space-y-5 p-9">
+                      <p className="font-brand-accent text-fp-body font-light italic leading-relaxed text-brand-muted">&ldquo;{t.quote}&rdquo;</p>
+                      <footer className="flex items-center gap-3 border-t border-brand-outline-soft/30 pt-5 font-brand-mono text-fp-tag font-medium uppercase tracking-[0.06em] text-brand-tertiary">
+                        <span className="h-px flex-1 bg-brand-outline-soft/40" aria-hidden />
+                        {t.authorName}
+                      </footer>
+                    </div>
+                  </blockquote>
+                );
+              })}
             </div>
           )}
         </SectionShell>
@@ -385,49 +406,5 @@ export function LandingSections({
         </div>
       </Scroll3DSection>
     </>
-  );
-}
-
-function FeaturedProjectCard({
-  item,
-  emphasize,
-  copy,
-}: {
-  item: Item;
-  emphasize?: boolean;
-  copy: (typeof content)["landing"]["sections"]["projects"];
-}) {
-  return (
-    <div
-      className={`relative flex h-full flex-col overflow-hidden border border-brand-outline-soft/35 bg-brand-white/95 p-9 shadow-[0_28px_80px_-40px_rgb(11_28_48_/0.55)] md:p-12 ${emphasize ? "min-h-[24rem]" : ""}`}
-    >
-      <div className="relative z-10 flex flex-1 flex-col">
-        <span className="inline-flex w-max rounded-full bg-brand-surface px-3 py-1 font-brand-mono text-fp-tag font-semibold uppercase text-brand-muted">{copy.flagshipBadge}</span>
-        <h3 className="font-brand-display text-fp-sub mt-8 font-bold text-brand-fg">{item.title}</h3>
-        <p className="mt-5 max-w-xl flex-1 font-brand text-fp-body leading-relaxed text-brand-secondary">{item.blurb}</p>
-        <Link href={item.href} className="mt-10 inline-flex w-max items-center gap-2 font-brand text-fp-small font-semibold text-brand-tertiary hover:underline">
-          {copy.cardCta} <IconArrow className="h-4 w-4" />
-        </Link>
-      </div>
-      <div
-        className="pointer-events-none absolute -bottom-24 -right-16 h-[55%] w-[72%] opacity-[0.12] blur-px"
-        style={{
-          background: "radial-gradient(circle at 30% 30%, rgb(0 101 145), transparent 60%)",
-        }}
-      />
-    </div>
-  );
-}
-
-function CompactCard({ item, copy }: { item: Item; copy: (typeof content)["landing"]["sections"]["projects"] }) {
-  const arrow = content.landing.sections.repos.arrow;
-  return (
-    <article className="flex h-full flex-col border border-brand-outline-soft/35 bg-brand-white/92 p-8 shadow-inner backdrop-blur-sm">
-      <h3 className="font-brand-display text-fp-card font-bold text-brand-fg">{item.title}</h3>
-      <p className="mt-4 line-clamp-4 flex-1 font-brand text-fp-small leading-relaxed text-brand-secondary">{item.blurb}</p>
-      <Link href={item.href} className="mt-8 inline-flex font-brand text-fp-small font-semibold text-brand-tertiary hover:underline">
-        {copy.compactCta} {arrow}
-      </Link>
-    </article>
   );
 }

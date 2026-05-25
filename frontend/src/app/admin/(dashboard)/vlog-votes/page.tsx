@@ -1,19 +1,6 @@
-import { CrudPage } from "@/components/admin/CrudPage";
+import { redirect } from "next/navigation";
 
-export default function AdminVlogVotesPage() {
-  return (
-    <CrudPage
-      title="Vlog votes"
-      resourcePath="/admin/vlogs/votes"
-      allowCreate={false}
-      allowEdit={false}
-      columns={[
-        { key: "vlog.heading", label: "Vlog" },
-        { key: "visitorKey", label: "Visitor key" },
-        { key: "value", label: "Value" },
-        { key: "createdAt", label: "Created" },
-      ]}
-      fields={[]}
-    />
-  );
+/** Votes/likes are managed under Vlogs → row → modal Likes/dislikes tab */
+export default function AdminVlogVotesRedirectPage() {
+  redirect("/admin/vlogs");
 }

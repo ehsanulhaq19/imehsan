@@ -1,7 +1,18 @@
-import { fetchJson, fetchApi } from "./client";
+import { type PaginatedResult, fetchApi, fetchJson, fetchJsonPaginated } from "./client";
 
-export function fetchVlogsList<T>() {
-  return fetchJson<T>("/vlogs");
+export type VlogListRow = {
+  id: string;
+  slug: string;
+  heading: string;
+  description?: string | null;
+  mediaItems?: { role: string; media: { path: string; mimeType: string } }[];
+};
+
+const defaultListLimit = 12;
+
+export async function fetchVlogsPage(page = 1, limit = defaultListLimit) {
+  const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+  return fetchJsonPaginated<VlogListRow>(`/vlogs?${q}`, page, limit);
 }
 
 export function fetchVlogBySlug<T>(slug: string) {

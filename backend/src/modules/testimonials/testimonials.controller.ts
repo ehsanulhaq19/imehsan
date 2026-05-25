@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { IsBoolean, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, MinLength, ValidateIf } from 'class-validator';
 import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { TestimonialsRepository } from './testimonials.repository';
@@ -10,6 +10,10 @@ class TDto {
   authorName: string;
   @IsString()
   quote: string;
+  @IsOptional()
+  @ValidateIf((_, v) => v != null && v !== "")
+  @IsString()
+  coverImageUrl?: string | null;
   @IsOptional()
   @IsBoolean()
   approved?: boolean;

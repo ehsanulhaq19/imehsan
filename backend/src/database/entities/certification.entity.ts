@@ -26,6 +26,9 @@ export class Certification {
   @Column({ name: 'thumbnail_url', type: 'varchar', nullable: true })
   thumbnailUrl: string | null;
 
+  @Column({ name: 'cover_image_url', type: 'varchar', nullable: true })
+  coverImageUrl: string | null;
+
   @Column({ name: 'sort_order', type: 'int', default: 0 })
   sortOrder: number;
 

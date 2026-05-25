@@ -8,14 +8,15 @@ export default function AdminCertificationsPage() {
       columns={[
         { key: "slug", label: "Slug" },
         { key: "heading", label: "Heading" },
+        { key: "coverImageUrl", label: "Cover" },
         { key: "published", label: "Published" },
       ]}
       fields={[
         { name: "slug", label: "Slug", type: "text" },
         { name: "heading", label: "Heading", type: "text" },
-        { name: "detail", label: "Detail", type: "textarea" },
+        { name: "coverImageUrl", label: "Cover image", type: "image-upload" },
+        { name: "detail", label: "Detail", type: "richtext" },
         { name: "linkUrl", label: "Link URL", type: "url" },
-        { name: "thumbnailUrl", label: "Thumbnail URL", type: "url" },
         { name: "sortOrder", label: "Sort order", type: "number" },
         { name: "published", label: "Published", type: "checkbox" },
       ]}

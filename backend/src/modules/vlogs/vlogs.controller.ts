@@ -21,6 +21,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
+import { PublicListQueryDto, publicPaginatedMeta } from '../../common/dto/public-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { VlogsService } from './vlogs.service';
 
@@ -73,8 +74,15 @@ export class VlogsPublicController {
   constructor(private readonly svc: VlogsService) {}
 
   @Get()
-  list() {
-    return this.svc.listPublished();
+  async list(@Query() query: PublicListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 12;
+    const { items, total } = await this.svc.listPublishedPaginated(
+      page,
+      limit,
+      query.excludeSlug,
+    );
+    return { items, meta: publicPaginatedMeta(total, page, limit) };
   }
 
   @Get(':slug')
@@ -110,11 +118,37 @@ export class VlogsAdminController {
     return this.svc.recentActivity(limit);
   }
 
+  @Get(':id/comments')
+  async commentsForVlog(@Param('id') id: string, @Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = Math.min(query.limit ?? 20, 100);
+    const { items, total } = await this.svc.listCommentsForVlogPaginated(
+      id,
+      page,
+      limit,
+      query.q,
+    );
+    return { items, meta: paginatedMeta(total, page, limit) };
+  }
+
+  @Get(':id/votes')
+  async votesForVlog(@Param('id') id: string, @Query() query: AdminListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = Math.min(query.limit ?? 20, 100);
+    const { items, total } = await this.svc.listVotesForVlogPaginated(
+      id,
+      page,
+      limit,
+      query.q,
+    );
+    return { items, meta: paginatedMeta(total, page, limit) };
+  }
+
   @Get()
   async list(@Query() query: AdminListQueryDto) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
-    const { items, total } = await this.svc.listAdminPaginated(page, limit, query.q);
+    const { items, total } = await this.svc.listAdminPaginatedWithEngagement(page, limit, query.q);
     return { items, meta: paginatedMeta(total, page, limit) };
   }
 

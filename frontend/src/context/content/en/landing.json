@@ -40,13 +40,21 @@
       }
     ],
     "codePanel": {
-      "className": "SeniorAIService",
-      "initLine": "self.reliability_first = \"yes\"",
-      "stackItems": ["\"TypeScript\"", "\"Node\"", "\"OpenAI\""],
-      "methodName": "deploy",
-      "methodReturn": "policy.guard().serve().observe()",
+      "className": "SeniorFullStackAI",
+      "initLine": "self.scope = \"UI, typed APIs, data plane, inference, observability\"",
+      "stackItems": [
+        "\"TypeScript\"",
+        "\"React / Next.js\"",
+        "\"Node + Python services\"",
+        "\"PostgreSQL / Prisma\"",
+        "\"queues, caches, workflows\"",
+        "\"LLMs, RAG, eval harnesses\"",
+        "\"Docker / cloud / IaC\""
+      ],
+      "methodName": "ship_vertical_slice",
+      "methodReturn": "ui.compose(api.orchestrate(model.rag_guarded(roadmap)).instrument())",
       "instanceFocus": "\"production\"",
-      "shipArg": "\"your next milestone\""
+      "shipArg": "\"from schemas to monitored release\""
     }
   },
   "sections": {

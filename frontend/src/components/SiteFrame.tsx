@@ -12,7 +12,11 @@ export function SiteFrame({ children }: { children: React.ReactNode }) {
   const isAdmin = path.startsWith("/admin");
 
   if (isAdmin) {
-    return <div className="flex min-h-screen flex-col">{children}</div>;
+    return (
+      <div className="flex min-h-[100svh] flex-col bg-background font-brand text-fp-body text-foreground [-webkit-font-smoothing:antialiased]">
+        {children}
+      </div>
+    );
   }
 
   return (

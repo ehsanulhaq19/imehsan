@@ -14,8 +14,8 @@ export class VlogsService {
     private readonly config: ConfigService,
   ) {}
 
-  listPublished() {
-    return this.repo.listPublished();
+  listPublishedPaginated(page: number, limit: number, excludeSlug?: string) {
+    return this.repo.listPublishedPaginated(page, limit, excludeSlug);
   }
 
   async detail(slug: string) {
@@ -40,6 +40,22 @@ export class VlogsService {
     return this.repo.listAdminPaginated(page, limit, q);
   }
 
+  /** Admin list rows include `engagement` counts (`comments`, `likes`, `dislikes`). */
+  async listAdminPaginatedWithEngagement(page: number, limit: number, q?: string) {
+    const { items, total } = await this.repo.listAdminPaginated(page, limit, q);
+    const ids = items.map((i) => i.id);
+    const countMap = await this.repo.getEngagementCountsByVlogIds(ids);
+    const enriched = items.map((v) => ({
+      ...v,
+      engagement: countMap.get(v.id) ?? {
+        comments: 0,
+        likes: 0,
+        dislikes: 0,
+      },
+    }));
+    return { items: enriched, total };
+  }
+
   recentActivity(limit: number) {
     return this.repo.recentActivity(limit);
   }
@@ -50,6 +66,28 @@ export class VlogsService {
 
   listVotesPaginated(page: number, limit: number, q?: string) {
     return this.repo.listVotesPaginated(page, limit, q);
+  }
+
+  async listCommentsForVlogPaginated(
+    vlogId: string,
+    page: number,
+    limit: number,
+    q?: string,
+  ) {
+    const exists = await this.repo.findById(vlogId);
+    if (!exists) throw new NotFoundException('Vlog not found');
+    return this.repo.listCommentsPaginated(page, limit, q, vlogId);
+  }
+
+  async listVotesForVlogPaginated(
+    vlogId: string,
+    page: number,
+    limit: number,
+    q?: string,
+  ) {
+    const exists = await this.repo.findById(vlogId);
+    if (!exists) throw new NotFoundException('Vlog not found');
+    return this.repo.listVotesPaginated(page, limit, q, vlogId);
   }
 
   patchComment(id: string, body: { authorName?: string | null; body?: string }) {

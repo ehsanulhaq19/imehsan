@@ -11,8 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, ValidateIf, MinLength } from 'class-validator';
 import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
+import { PublicListQueryDto, publicPaginatedMeta } from '../../common/dto/public-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { CertificationsRepository } from './certifications.repository';
 
@@ -36,6 +37,11 @@ class CertificationCreateDto {
   @IsOptional()
   @IsString()
   thumbnailUrl?: string;
+
+  @IsOptional()
+  @ValidateIf((_, v) => v != null && v !== "")
+  @IsString()
+  coverImageUrl?: string | null;
 
   @IsOptional()
   @Type(() => Number)
@@ -72,6 +78,11 @@ class CertificationUpdateDto {
   thumbnailUrl?: string;
 
   @IsOptional()
+  @ValidateIf((_, v) => v != null && v !== "")
+  @IsString()
+  coverImageUrl?: string | null;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   sortOrder?: number;
@@ -87,8 +98,11 @@ export class CertificationsPublicController {
   constructor(private readonly repo: CertificationsRepository) {}
 
   @Get()
-  list() {
-    return this.repo.listPublic();
+  async list(@Query() query: PublicListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 12;
+    const { items, total } = await this.repo.listPublicPaginated(page, limit, query.excludeSlug);
+    return { items, meta: publicPaginatedMeta(total, page, limit) };
   }
 
   @Get(':slug')

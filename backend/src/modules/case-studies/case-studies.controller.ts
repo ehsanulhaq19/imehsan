@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { IsBoolean, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, ValidateIf, IsUUID, MinLength } from 'class-validator';
 import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
+import { PublicListQueryDto, publicPaginatedMeta } from '../../common/dto/public-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { CaseStudiesService } from './case-studies.service';
 
@@ -16,6 +17,10 @@ class CsDto {
   @IsOptional()
   @IsString()
   externalLink?: string;
+  @IsOptional()
+  @ValidateIf((_, v) => v != null && v !== "")
+  @IsString()
+  coverImageUrl?: string | null;
   @IsOptional()
   sortOrder?: number;
   @IsOptional()
@@ -33,8 +38,15 @@ export class CaseStudiesPublicController {
   constructor(private readonly svc: CaseStudiesService) {}
 
   @Get()
-  list() {
-    return this.svc.listPublished();
+  async list(@Query() query: PublicListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 12;
+    const { items, total } = await this.svc.listPublishedPaginated(
+      page,
+      limit,
+      query.excludeSlug,
+    );
+    return { items, meta: publicPaginatedMeta(total, page, limit) };
   }
 
   @Get(':slug')

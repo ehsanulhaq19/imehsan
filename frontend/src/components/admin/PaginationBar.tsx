@@ -11,14 +11,14 @@ export function PaginationBar({
 }) {
   if (!meta || meta.totalPages <= 1) return null;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--card-border)] px-3 py-2 text-[11px] dark:border-neutral-700">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--card-border)] px-3 py-3 font-brand text-fp-small dark:border-neutral-700/70">
       <span className="text-hcode-muted">
         Page {meta.page} / {meta.totalPages} · {meta.total} total
       </span>
       <div className="flex gap-2">
         <button
           type="button"
-          className="hcode-btn-outline px-3 py-2 text-[10px]"
+          className="hcode-btn-outline px-4 py-2 font-brand text-fp-caption"
           disabled={meta.page <= 1}
           onClick={() => onChange(meta.page - 1)}
         >
@@ -26,7 +26,7 @@ export function PaginationBar({
         </button>
         <button
           type="button"
-          className="hcode-btn-outline px-3 py-2 text-[10px]"
+          className="hcode-btn-outline px-4 py-2 font-brand text-fp-caption"
           disabled={meta.page >= meta.totalPages}
           onClick={() => onChange(meta.page + 1)}
         >

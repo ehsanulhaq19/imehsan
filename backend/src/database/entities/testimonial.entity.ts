@@ -19,6 +19,9 @@ export class Testimonial {
   @Column({ type: 'text' })
   quote: string;
 
+  @Column({ name: 'cover_image_url', type: 'varchar', nullable: true })
+  coverImageUrl: string | null;
+
   @Column({ type: 'boolean', default: false })
   approved: boolean;
 

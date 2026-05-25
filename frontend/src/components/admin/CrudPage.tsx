@@ -1,18 +1,22 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
 import { adminFetch, readAdminToken, type PageMeta } from "@/lib/admin-fetch";
+import { stripHtmlToPlainText } from "@/lib/html-plain";
+import { AdminRichTextEditor } from "@/components/admin/AdminRichTextEditor";
 import { Modal } from "@/components/admin/Modal";
 import { PaginationBar } from "@/components/admin/PaginationBar";
+import { assetUrl } from "@/api/client";
 
 export type FieldDef =
   | {
       name: string;
       label: string;
-      type: "text" | "textarea" | "number" | "email" | "url" | "date" | "time" | "password";
+      type: "text" | "textarea" | "richtext" | "number" | "email" | "url" | "date" | "time" | "password";
     }
   | { name: string; label: string; type: "checkbox" }
-  | { name: string; label: string; type: "select"; options: { value: string; label: string }[] };
+  | { name: string; label: string; type: "select"; options: { value: string; label: string }[] }
+  | { name: string; label: string; type: "image-upload" };
 
 export type CrudPageProps = {
   title: string;
@@ -102,6 +106,15 @@ export function CrudPage({
         body[f.name] = raw === "true";
         continue;
       }
+      if (f.type === "richtext") {
+        if (stripHtmlToPlainText(raw).trim() === "") continue;
+        body[f.name] = raw;
+        continue;
+      }
+      if (f.type === "image-upload") {
+        body[f.name] = raw.trim() === "" ? null : raw;
+        continue;
+      }
       if (f.type === "number") {
         if (raw.trim() === "") continue;
         const n = Number(raw);
@@ -160,14 +173,14 @@ export function CrudPage({
 
   function cell(row: Record<string, unknown>, key: string) {
     const v = pick(row, key);
-    if (v === null || v === undefined) return "—";
+    if (v === null || v === undefined) return "-";
     if (typeof v === "object") return JSON.stringify(v).slice(0, 80);
     return String(v);
   }
 
   if (!token) {
     return (
-      <div className="text-sm text-hcode-muted">
+      <div className="text-fp-small text-hcode-muted">
         Sign in required. <a href="/admin/login" className="hcode-link">Login</a>
       </div>
     );
@@ -177,13 +190,13 @@ export function CrudPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-display text-xl uppercase tracking-[0.12em] text-black dark:text-neutral-100">{title}</h1>
-          <p className="mt-1 text-xs text-hcode-muted">Search, create, edit, and delete records.</p>
+          <h1 className="font-brand-display text-fp-section font-bold uppercase tracking-tight text-brand-fg dark:text-neutral-50">{title}</h1>
+          <p className="font-brand mt-1 text-fp-small text-hcode-muted">Search, create, edit, and delete records.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {extraActions}
           {allowCreate ? (
-            <button type="button" className="hcode-btn px-4 py-2 text-[10px]" onClick={openCreate}>
+            <button type="button" className="hcode-btn px-4 py-2.5 font-brand text-fp-caption" onClick={openCreate}>
               New
             </button>
           ) : null}
@@ -204,23 +217,23 @@ export function CrudPage({
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}
         />
-        <button type="submit" className="hcode-btn-outline px-4 py-2 text-[10px]">
+        <button type="submit" className="hcode-btn-outline px-4 py-2.5 font-brand text-fp-caption">
           Search
         </button>
       </form>
 
-      {err ? <p className="text-sm text-red-600 dark:text-red-400">{err}</p> : null}
+      {err ? <p className="text-fp-small text-red-600 dark:text-red-400">{err}</p> : null}
 
-      <div className="overflow-x-auto border border-[var(--card-border)] bg-[var(--card-bg)] dark:border-neutral-700">
-        <table className="min-w-full border-collapse text-left text-[11px]">
-          <thead className="border-b border-[var(--card-border)] bg-hcode-gray/80 dark:border-neutral-700 dark:bg-neutral-900">
+      <div className="overflow-x-auto rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] dark:border-neutral-700/70">
+        <table className="min-w-full border-collapse text-left font-brand text-fp-small">
+          <thead className="border-b border-[var(--card-border)] bg-hcode-gray/90 dark:border-neutral-700/70 dark:bg-neutral-950/80">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} className="whitespace-nowrap px-3 py-2 font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+                <th key={c.key} className="text-fp-caption whitespace-nowrap px-3 py-3 font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                   {c.label}
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+              <th className="text-fp-caption px-3 py-3 text-right font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 Actions
               </th>
             </tr>
@@ -242,20 +255,20 @@ export function CrudPage({
               items.map((row) => (
                 <tr key={String(row.id)} className="border-b border-[var(--card-border)] dark:border-neutral-800">
                   {columns.map((c) => (
-                    <td key={c.key} className="max-w-[220px] truncate px-3 py-2 text-foreground">
+                    <td key={c.key} className="max-w-[220px] truncate px-3 py-2.5 font-brand text-fp-small text-foreground">
                       {cell(row, c.key)}
                     </td>
                   ))}
-                  <td className="space-x-2 whitespace-nowrap px-3 py-2 text-right">
+                  <td className="space-x-2 whitespace-nowrap px-3 py-2.5 text-right">
                     {allowEdit ? (
-                      <button type="button" className="text-[10px] font-semibold uppercase text-hcode-violet" onClick={() => openEdit(row)}>
+                      <button type="button" className="font-brand text-fp-caption font-semibold uppercase text-hcode-violet" onClick={() => openEdit(row)}>
                         Edit
                       </button>
                     ) : null}
                     {allowDelete ? (
                       <button
                         type="button"
-                        className="text-[10px] font-semibold uppercase text-red-600 dark:text-red-400"
+                        className="font-brand text-fp-caption font-semibold uppercase text-red-600 dark:text-red-400"
                         onClick={() => void onDelete(String(row.id))}
                       >
                         Delete
@@ -276,10 +289,10 @@ export function CrudPage({
         onClose={() => setModal(null)}
         footer={
           <>
-            <button type="button" className="hcode-btn-outline px-4 py-2 text-[10px]" onClick={() => setModal(null)}>
+            <button type="button" className="hcode-btn-outline px-4 py-2.5 font-brand text-fp-caption" onClick={() => setModal(null)}>
               Cancel
             </button>
-            <button type="submit" form="crud-form" className="hcode-btn px-4 py-2 text-[10px]">
+            <button type="submit" form="crud-form" className="hcode-btn px-4 py-2.5 font-brand text-fp-caption">
               Save
             </button>
           </>
@@ -288,7 +301,7 @@ export function CrudPage({
         <form id="crud-form" className="space-y-3" onSubmit={onSubmit}>
           {fields.map((f) =>
             f.type === "checkbox" ? (
-              <label key={f.name} className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+              <label key={f.name} className="font-brand flex items-center gap-2 text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 <input
                   type="checkbox"
                   checked={form[f.name] === "true"}
@@ -298,16 +311,21 @@ export function CrudPage({
                 {f.label}
               </label>
             ) : f.type === "textarea" ? (
-              <label key={f.name} className="block text-[11px] font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+              <label key={f.name} className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 {f.label}
                 <textarea
-                  className="mt-1 min-h-[88px] w-full border border-hcode-input bg-white px-3 py-2 text-[11px] normal-case dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
+                  className="mt-1 min-h-[88px] w-full rounded-lg border border-hcode-input bg-card px-3 py-2 font-brand text-fp-small normal-case text-foreground outline-none transition-colors focus:border-brand-tertiary focus:ring-2 focus:ring-brand-tertiary/20 dark:border-neutral-600 dark:bg-neutral-950/50"
                   value={form[f.name] ?? ""}
                   onChange={(e) => setForm((s) => ({ ...s, [f.name]: e.target.value }))}
                 />
               </label>
+            ) : f.type === "richtext" ? (
+              <label key={f.name} className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
+                {f.label}
+                <AdminRichTextEditor value={form[f.name] ?? ""} onChange={(html) => setForm((s) => ({ ...s, [f.name]: html }))} />
+              </label>
             ) : f.type === "select" ? (
-              <label key={f.name} className="block text-[11px] font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+              <label key={f.name} className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 {f.label}
                 <select
                   className="hcode-input normal-case"
@@ -321,8 +339,17 @@ export function CrudPage({
                   ))}
                 </select>
               </label>
+            ) : f.type === "image-upload" ? (
+              <CrudImageUpload
+                key={f.name}
+                label={f.label}
+                path={form[f.name] ?? ""}
+                token={token}
+                onPath={(next) => setForm((s) => ({ ...s, [f.name]: next }))}
+                setErr={setErr}
+              />
             ) : (
-              <label key={f.name} className="block text-[11px] font-semibold uppercase tracking-wider text-black dark:text-neutral-200">
+              <label key={f.name} className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 {f.label}
                 <input
                   type={f.type === "number" ? "number" : f.type}
@@ -335,6 +362,63 @@ export function CrudPage({
           )}
         </form>
       </Modal>
+    </div>
+  );
+}
+
+function CrudImageUpload(props: {
+  label: string;
+  path: string;
+  token: string;
+  onPath: (p: string) => void;
+  setErr: (e: string | null) => void;
+}) {
+  const { label, path, token, onPath, setErr } = props;
+  const [busy, setBusy] = useState(false);
+  const preview = path?.trim();
+
+  async function onFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBusy(true);
+    setErr(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await adminFetch("/admin/media/upload", token, { method: "POST", body: fd });
+    setBusy(false);
+    e.target.value = "";
+    if (!res.ok) {
+      setErr(`Upload failed (${res.status})`);
+      return;
+    }
+    const raw = await res.json();
+    const url = typeof raw?.url === "string" ? raw.url : "";
+    if (url) onPath(url);
+  }
+
+  return (
+    <div className="font-brand text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
+      <p>{label}</p>
+      {preview ? (
+        <div className="mt-2 overflow-hidden rounded-lg border border-hcode-input dark:border-neutral-600">
+          {/* eslint-disable-next-line @next/next/no-img-element -- admin arbitrary upload preview */}
+          <img src={assetUrl(preview)} alt="" className="max-h-40 w-full object-cover" />
+          <button
+            type="button"
+            className="w-full border-t border-[var(--card-border)] bg-hcode-gray/70 px-2 py-2 font-brand text-[10px] font-semibold normal-case text-foreground hover:bg-hcode-gray"
+            onClick={() => onPath("")}
+          >
+            Remove image
+          </button>
+        </div>
+      ) : null}
+      <input
+        type="file"
+        accept="image/*"
+        disabled={busy}
+        className="mt-2 block w-full font-brand text-fp-small normal-case text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-brand-tertiary/20 file:px-3 file:py-2 file:font-semibold file:text-brand-fg"
+        onChange={(ev) => void onFile(ev)}
+      />
     </div>
   );
 }

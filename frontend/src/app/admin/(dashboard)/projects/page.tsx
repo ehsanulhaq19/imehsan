@@ -8,12 +8,14 @@ export default function AdminProjectsPage() {
       columns={[
         { key: "slug", label: "Slug" },
         { key: "heading", label: "Heading" },
+        { key: "coverImageUrl", label: "Cover" },
         { key: "published", label: "Published" },
       ]}
       fields={[
         { name: "slug", label: "Slug", type: "text" },
         { name: "heading", label: "Heading", type: "text" },
-        { name: "details", label: "Details", type: "textarea" },
+        { name: "coverImageUrl", label: "Cover image", type: "image-upload" },
+        { name: "details", label: "Details", type: "richtext" },
         { name: "link", label: "Link", type: "url" },
         { name: "sortOrder", label: "Sort order", type: "number" },
         { name: "published", label: "Published", type: "checkbox" },

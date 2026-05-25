@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Not, Repository } from 'typeorm';
 import { VlogComment } from '../../database/entities/vlog-comment.entity';
 import { VlogMedia } from '../../database/entities/vlog-media.entity';
 import { VlogVote } from '../../database/entities/vlog-vote.entity';
@@ -19,13 +19,19 @@ export class VlogsRepository {
     private readonly vv: Repository<VlogVote>,
   ) {}
 
-  listPublished(limit = 12) {
-    return this.vlogs.find({
-      where: { published: true },
-      order: { sortOrder: 'ASC', createdAt: 'DESC' },
-      take: limit,
+  async listPublishedPaginated(page: number, limit: number, excludeSlug?: string) {
+    const skip = (page - 1) * limit;
+    const ex = excludeSlug?.trim();
+    const where = ex ? { published: true, slug: Not(ex) } : { published: true };
+    const total = await this.vlogs.count({ where });
+    const items = await this.vlogs.find({
+      where,
+      order: { sortOrder: 'DESC', createdAt: 'DESC' },
       relations: { mediaItems: { media: true } },
+      skip,
+      take: limit,
     });
+    return { items, total };
   }
 
   findPublished(slug: string) {
@@ -67,7 +73,16 @@ export class VlogsRepository {
     return { items, total };
   }
 
-  async listCommentsPaginated(page: number, limit: number, q?: string) {
+  findById(id: string) {
+    return this.vlogs.findOne({ where: { id } });
+  }
+
+  async listCommentsPaginated(
+    page: number,
+    limit: number,
+    q?: string,
+    vlogId?: string,
+  ) {
     const skip = (page - 1) * limit;
     const qb = this.vc
       .createQueryBuilder('c')
@@ -75,6 +90,9 @@ export class VlogsRepository {
       .orderBy('c.createdAt', 'DESC')
       .skip(skip)
       .take(limit);
+    if (vlogId) {
+      qb.andWhere('c.vlog_id = :vlogId', { vlogId });
+    }
     if (q?.trim()) {
       qb.andWhere(
         new Brackets((w) => {
@@ -82,6 +100,13 @@ export class VlogsRepository {
             'c.authorName ILIKE :s',
             { s: `%${q.trim()}%` },
           );
+          if (!vlogId) {
+            w.orWhere('v.slug ILIKE :sv', {
+              sv: `%${q.trim()}%`,
+            }).orWhere('v.heading ILIKE :vh', {
+              vh: `%${q.trim()}%`,
+            });
+          }
         }),
       );
     }
@@ -89,7 +114,7 @@ export class VlogsRepository {
     return { items, total };
   }
 
-  async listVotesPaginated(page: number, limit: number, q?: string) {
+  async listVotesPaginated(page: number, limit: number, q?: string, vlogId?: string) {
     const skip = (page - 1) * limit;
     const qb = this.vv
       .createQueryBuilder('vo')
@@ -97,18 +122,70 @@ export class VlogsRepository {
       .orderBy('vo.createdAt', 'DESC')
       .skip(skip)
       .take(limit);
+    if (vlogId) {
+      qb.andWhere('vo.vlog_id = :vlogId', { vlogId });
+    }
     if (q?.trim()) {
       qb.andWhere(
         new Brackets((w) => {
-          w.where('v.slug ILIKE :s', { s: `%${q.trim()}%` }).orWhere(
-            'v.heading ILIKE :s',
-            { s: `%${q.trim()}%` },
-          );
+          w.where('vo.visitor_key ILIKE :vk', {
+            vk: `%${q.trim()}%`,
+          });
+          if (!vlogId) {
+            w.orWhere('v.slug ILIKE :s', {
+              s: `%${q.trim()}%`,
+            }).orWhere('v.heading ILIKE :vh', {
+              vh: `%${q.trim()}%`,
+            });
+          }
         }),
       );
     }
     const [items, total] = await qb.getManyAndCount();
     return { items, total };
+  }
+
+  /** Per-vlog aggregates for admin list rows (two batched queries). */
+  async getEngagementCountsByVlogIds(
+    ids: string[],
+  ): Promise<Map<string, { comments: number; likes: number; dislikes: number }>> {
+    type Row = { comments: number; likes: number; dislikes: number };
+    const base = (): Row => ({ comments: 0, likes: 0, dislikes: 0 });
+    const map = new Map<string, Row>();
+    for (const id of ids) map.set(id, base());
+    if (!ids.length) return map;
+
+    const cRows = await this.vc
+      .createQueryBuilder('c')
+      .select('c.vlog_id', 'vlogId')
+      .addSelect('COUNT(*)::int', 'cnt')
+      .where('c.vlog_id IN (:...ids)', { ids })
+      .groupBy('c.vlog_id')
+      .getRawMany<{ vlogId: string; cnt: number }>();
+
+    for (const r of cRows) {
+      const row = map.get(String(r.vlogId));
+      if (row) row.comments = Number(r.cnt);
+    }
+
+    const vRows = await this.vv
+      .createQueryBuilder('vo')
+      .select('vo.vlog_id', 'vlogId')
+      .addSelect('COALESCE(SUM(CASE WHEN vo.value = 1 THEN 1 ELSE 0 END), 0)::int', 'likes')
+      .addSelect('COALESCE(SUM(CASE WHEN vo.value = -1 THEN 1 ELSE 0 END), 0)::int', 'dislikes')
+      .where('vo.vlog_id IN (:...ids)', { ids })
+      .groupBy('vo.vlog_id')
+      .getRawMany<{ vlogId: string; likes: number; dislikes: number }>();
+
+    for (const r of vRows) {
+      const row = map.get(String(r.vlogId));
+      if (row) {
+        row.likes = Number(r.likes);
+        row.dislikes = Number(r.dislikes);
+      }
+    }
+
+    return map;
   }
 
   async recentActivity(limit: number) {

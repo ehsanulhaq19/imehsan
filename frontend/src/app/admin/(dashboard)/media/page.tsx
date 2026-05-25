@@ -72,7 +72,9 @@ export default function AdminMediaPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-xl uppercase tracking-[0.12em] text-black dark:text-neutral-100">Media</h1>
+        <h1 className="font-brand-display text-fp-section font-bold uppercase tracking-tight text-brand-fg dark:text-neutral-50">
+          Media
+        </h1>
         <p className="mt-1 text-xs text-hcode-muted">Upload files and manage stored references.</p>
       </div>
 

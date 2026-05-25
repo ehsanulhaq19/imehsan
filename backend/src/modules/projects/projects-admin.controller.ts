@@ -13,6 +13,7 @@ import {
   IsBoolean,
   IsOptional,
   IsString,
+  ValidateIf,
   IsUUID,
   MaxLength,
   MinLength,
@@ -36,6 +37,11 @@ class CreateProjectDto {
   @IsOptional()
   @IsString()
   link?: string;
+
+  @IsOptional()
+  @ValidateIf((_, v) => v != null && v !== "")
+  @IsString()
+  coverImageUrl?: string | null;
 
   @IsOptional()
   sortOrder?: number;

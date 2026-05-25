@@ -5,8 +5,8 @@ import { ProjectsRepository } from './projects.repository';
 export class ProjectsService {
   constructor(private readonly repo: ProjectsRepository) {}
 
-  listPublished() {
-    return this.repo.listPublished();
+  listPublishedPaginated(page: number, limit: number, excludeSlug?: string) {
+    return this.repo.listPublishedPaginated(page, limit, excludeSlug);
   }
 
   async getPublishedBySlug(slug: string) {

@@ -6,8 +6,8 @@ import { CaseStudiesRepository } from './case-studies.repository';
 export class CaseStudiesService {
   constructor(private readonly repo: CaseStudiesRepository) {}
 
-  listPublished() {
-    return this.repo.listPublished();
+  listPublishedPaginated(page: number, limit: number, excludeSlug?: string) {
+    return this.repo.listPublishedPaginated(page, limit, excludeSlug);
   }
 
   async getPublished(slug: string) {

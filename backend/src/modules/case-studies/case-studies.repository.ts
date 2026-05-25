@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Not, Repository } from 'typeorm';
 import { CaseStudyMedia } from '../../database/entities/case-study-media.entity';
 import { CaseStudy } from '../../database/entities/case-study.entity';
 
@@ -13,12 +13,19 @@ export class CaseStudiesRepository {
     private readonly pivot: Repository<CaseStudyMedia>,
   ) {}
 
-  listPublished(limit = 12) {
-    return this.repo.find({
-      where: { published: true },
-      order: { sortOrder: 'ASC', createdAt: 'DESC' },
+  async listPublishedPaginated(page: number, limit: number, excludeSlug?: string) {
+    const skip = (page - 1) * limit;
+    const ex = excludeSlug?.trim();
+    const where = ex ? { published: true, slug: Not(ex) } : { published: true };
+    const total = await this.repo.count({ where });
+    const items = await this.repo.find({
+      where,
+      order: { sortOrder: 'DESC', createdAt: 'DESC' },
+      relations: { attachments: { media: true } },
+      skip,
       take: limit,
     });
+    return { items, total };
   }
 
   findPublished(slug: string) {

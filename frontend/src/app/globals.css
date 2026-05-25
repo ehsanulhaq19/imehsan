@@ -3,23 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --background: #fcfcfc;
-  --foreground: #626262;
+  /* Aligned with public marketing shell (`brand-*` palette) */
+  --background: #f8f9ff;
+  --foreground: #555f6f;
+  --foreground-muted: #747879;
   --card-bg: #ffffff;
-  --card-border: #e5e5e5;
-  --admin-sidebar: #f3f3f3;
-  --hcode-gray-surface: #f6f6f6;
-  --hcode-input-border: #dfdfdf;
+  --card-border: #c4c7c8;
+  --admin-sidebar: #eff4ff;
+  --hcode-gray-surface: #e5eeff;
+  --hcode-input-border: #c4c7c8;
 }
 
 .dark {
-  --background: #0f0f0f;
-  --foreground: #c4c4c4;
-  --card-bg: #171717;
-  --card-border: #2a2a2a;
-  --admin-sidebar: #141414;
-  --hcode-gray-surface: #1c1c1c;
-  --hcode-input-border: #404040;
+  --background: #0d1520;
+  --foreground: #c5ced9;
+  --foreground-muted: #9aaebf;
+  --card-bg: #141d2c;
+  --card-border: #2a3950;
+  --admin-sidebar: #0f1726;
+  --hcode-gray-surface: #1a2740;
+  --hcode-input-border: #3a4a63;
 }
 
 body {
@@ -57,25 +60,24 @@ body {
   animation: imehsan-drawer-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-
 @layer components {
   .hcode-section-title {
-    @apply font-display text-xs font-semibold uppercase tracking-[0.2em] text-black dark:text-neutral-100;
+    @apply font-brand text-fp-caption font-semibold uppercase tracking-[0.12em] text-brand-fg dark:text-neutral-50;
   }
   .hcode-card {
-    @apply border border-hcode-border bg-card p-6;
+    @apply rounded-lg border border-brand-outline-soft/50 bg-card p-6 dark:border-neutral-700/80;
   }
   .hcode-link {
-    @apply text-hcode-violet hover:text-black dark:hover:text-white;
+    @apply font-medium text-brand-tertiary underline-offset-4 transition-colors hover:text-brand-fg hover:underline dark:text-cyan-300/90 dark:hover:text-neutral-50;
   }
   .hcode-btn {
-    @apply inline-block border-2 border-black bg-black px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-transparent hover:text-black dark:border-neutral-200 dark:bg-neutral-200 dark:text-black dark:hover:bg-transparent dark:hover:text-neutral-200;
+    @apply inline-block rounded-lg border-2 border-brand-fg bg-brand-fg px-6 py-3 text-center font-brand text-fp-button font-semibold uppercase tracking-wide text-white transition-opacity duration-200 hover:opacity-[0.92] dark:border-brand-tertiary dark:bg-brand-tertiary dark:text-white dark:hover:opacity-[0.92];
   }
   .hcode-btn-outline {
-    @apply inline-block border-2 border-black bg-transparent px-6 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-black transition-colors duration-200 hover:bg-black hover:text-white dark:border-neutral-300 dark:text-neutral-100 dark:hover:bg-neutral-100 dark:hover:text-black;
+    @apply inline-block rounded-lg border-2 border-brand-outline bg-transparent px-6 py-3 text-center font-brand text-fp-button font-semibold uppercase tracking-wide text-brand-fg transition-colors duration-200 hover:border-brand-fg hover:bg-brand-surface-low dark:border-neutral-600 dark:text-neutral-100 dark:hover:border-brand-tertiary dark:hover:bg-white/5;
   }
   .hcode-input {
-    @apply mt-1 w-full rounded-none border border-hcode-input bg-card px-4 py-2.5 text-[11px] uppercase tracking-wider text-black outline-none focus:border-black dark:text-neutral-100 dark:focus:border-neutral-400;
+    @apply mt-1 w-full rounded-lg border border-hcode-input bg-card px-4 py-2.5 font-brand text-fp-small uppercase tracking-[0.08em] text-brand-fg outline-none transition-colors placeholder:text-brand-muted/50 focus:border-brand-tertiary focus:ring-2 focus:ring-brand-tertiary/20 dark:bg-[var(--card-bg)] dark:text-neutral-50 dark:focus:ring-brand-tertiary/30;
   }
   /** Public brand cards (marketing pages). */
   .brand-card {
@@ -106,4 +108,136 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Sanitized CMS HTML (projects, case studies, vlogs, certifications) */
+.rich-text {
+  @apply font-brand text-fp-body font-light leading-[1.82] text-brand-muted;
+}
+.rich-text :where(p):not(:last-child) {
+  margin-bottom: 1rem;
+}
+.rich-text :where(h1, h2, h3, h4) {
+  @apply font-brand-display font-semibold text-brand-fg;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.rich-text :where(h1) {
+  font-size: 1.5rem;
+}
+.rich-text :where(h2) {
+  font-size: 1.25rem;
+}
+.rich-text :where(h3, h4) {
+  font-size: 1.05rem;
+}
+.rich-text :where(ul, ol) {
+  margin: 0.75rem 0 1rem;
+  padding-left: 1.35rem;
+}
+.rich-text :where(ul) {
+  list-style-type: disc;
+}
+.rich-text :where(ol) {
+  list-style-type: decimal;
+}
+.rich-text :where(li):not(:last-child) {
+  margin-bottom: 0.35rem;
+}
+.rich-text :where(a) {
+  @apply text-brand-tertiary underline underline-offset-2 transition-colors hover:text-brand-fg;
+}
+.rich-text :where(blockquote) {
+  @apply border-l-4 border-brand-tertiary/50 pl-4 italic text-brand-secondary;
+  margin: 1rem 0;
+}
+.rich-text :where(code) {
+  @apply rounded bg-brand-surface-low px-1.5 py-0.5 font-brand-mono text-fp-caption text-brand-fg;
+}
+.rich-text :where(pre) {
+  @apply overflow-x-auto rounded-lg border border-brand-outline-soft/40 bg-brand-surface-low p-3 font-brand-mono text-fp-caption;
+  margin: 1rem 0;
+}
+.rich-text :where(pre code) {
+  background: transparent;
+  padding: 0;
+}
+
+/* react-quill in admin — use semantic fg (brand-fg stays #0b1c30 even in dark) */
+.admin-quill-wrapper .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid var(--hcode-input-border);
+  @apply bg-brand-surface-low/50 dark:bg-white/5;
+}
+.admin-quill-wrapper .ql-container.ql-snow {
+  border: none;
+  font-family: inherit;
+  min-height: 140px;
+  background: var(--card-bg);
+}
+.admin-quill-wrapper .ql-editor {
+  min-height: 140px;
+  /* Quill Snow ships .ql-editor { color: #444 } — override so dark theme stays readable */
+  @apply font-brand text-fp-small normal-case;
+  color: var(--foreground);
+}
+.admin-quill-wrapper .ql-editor.ql-blank::before {
+  color: var(--foreground-muted);
+  opacity: 0.85;
+  font-style: normal;
+}
+
+/* Toolbar icons & dropdowns (Snow defaults are tuned for white paper) */
+.dark .admin-quill-wrapper .ql-snow .ql-stroke {
+  stroke: #c9d5e3;
+}
+.dark .admin-quill-wrapper .ql-snow .ql-fill {
+  fill: #c9d5e3;
+}
+.dark .admin-quill-wrapper .ql-snow .ql-picker,
+.dark .admin-quill-wrapper .ql-snow .ql-picker-label,
+.dark .admin-quill-wrapper .ql-snow .ql-picker-item {
+  color: var(--foreground);
+}
+.dark .admin-quill-wrapper .ql-snow .ql-picker-options {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+.dark .admin-quill-wrapper .ql-snow .ql-tooltip {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 35%);
+}
+.dark .admin-quill-wrapper .ql-snow .ql-tooltip input[type="text"] {
+  color: var(--foreground);
+  border-color: var(--hcode-input-border);
+  background-color: var(--card-bg);
+}
+.dark .admin-quill-wrapper .ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-stroke,
+.dark .admin-quill-wrapper .ql-toolbar.ql-snow button:hover:not(.ql-active) .ql-stroke {
+  stroke: #f1f5f9;
+}
+.dark .admin-quill-wrapper .ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-fill,
+.dark .admin-quill-wrapper .ql-toolbar.ql-snow button:hover:not(.ql-active) .ql-fill {
+  fill: #f1f5f9;
+}
+
+/* Headings/lists inside editor inherit readable color */
+.dark .admin-quill-wrapper .ql-editor h1,
+.dark .admin-quill-wrapper .ql-editor h2,
+.dark .admin-quill-wrapper .ql-editor h3 {
+  color: var(--foreground);
+}
+.dark .admin-quill-wrapper .ql-editor a {
+  color: rgb(103 218 239);
+}
+
+/* Code blocks in-editor (Snow default is light-grey) */
+.dark .admin-quill-wrapper .ql-editor pre.ql-syntax {
+  background-color: rgb(15 23 42);
+  color: rgb(226 232 240);
+}
+.dark .admin-quill-wrapper .ql-editor blockquote {
+  color: var(--foreground-muted);
+  border-left-color: rgb(103 218 239 / 0.45);
 }

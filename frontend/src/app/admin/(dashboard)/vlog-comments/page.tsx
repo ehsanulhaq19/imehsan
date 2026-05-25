@@ -1,21 +1,6 @@
-import { CrudPage } from "@/components/admin/CrudPage";
+import { redirect } from "next/navigation";
 
-export default function AdminVlogCommentsPage() {
-  return (
-    <CrudPage
-      title="Vlog comments"
-      resourcePath="/admin/vlogs/comments"
-      allowCreate={false}
-      columns={[
-        { key: "vlog.heading", label: "Vlog" },
-        { key: "authorName", label: "Author" },
-        { key: "body", label: "Body" },
-        { key: "createdAt", label: "Created" },
-      ]}
-      fields={[
-        { name: "authorName", label: "Author", type: "text" },
-        { name: "body", label: "Body", type: "textarea" },
-      ]}
-    />
-  );
+/** Comments are managed under Vlogs → row → modal Comments tab */
+export default function AdminVlogCommentsRedirectPage() {
+  redirect("/admin/vlogs");
 }

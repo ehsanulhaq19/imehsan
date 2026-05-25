@@ -16,7 +16,7 @@ export class TestimonialsRepository {
   listApproved() {
     return this.repo.find({
       where: { approved: true },
-      order: { sortOrder: 'ASC', createdAt: 'DESC' },
+      order: { sortOrder: 'DESC', createdAt: 'DESC' },
       relations: { images: { media: true } },
     });
   }

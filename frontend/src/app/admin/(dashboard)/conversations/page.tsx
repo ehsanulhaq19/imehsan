@@ -93,7 +93,9 @@ export default function AdminConversationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-xl uppercase tracking-[0.12em] text-black dark:text-neutral-100">Conversations</h1>
+        <h1 className="font-brand-display text-fp-section font-bold uppercase tracking-tight text-brand-fg dark:text-neutral-50">
+          Conversations
+        </h1>
         <p className="mt-1 text-xs text-hcode-muted">AI widget threads with pagination.</p>
       </div>
 

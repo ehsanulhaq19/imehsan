@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Not, Repository } from 'typeorm';
 import { Certification } from '../../database/entities/certification.entity';
 
 @Injectable()
@@ -10,11 +10,18 @@ export class CertificationsRepository {
     private readonly repo: Repository<Certification>,
   ) {}
 
-  listPublic() {
-    return this.repo.find({
-      where: { published: true },
-      order: { sortOrder: 'ASC', createdAt: 'DESC' },
+  async listPublicPaginated(page: number, limit: number, excludeSlug?: string) {
+    const skip = (page - 1) * limit;
+    const ex = excludeSlug?.trim();
+    const where = ex ? { published: true, slug: Not(ex) } : { published: true };
+    const total = await this.repo.count({ where });
+    const items = await this.repo.find({
+      where,
+      order: { sortOrder: 'DESC', createdAt: 'DESC' },
+      skip,
+      take: limit,
     });
+    return { items, total };
   }
 
   async findPublicBySlug(slug: string) {
