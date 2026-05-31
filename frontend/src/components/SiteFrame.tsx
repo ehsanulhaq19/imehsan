@@ -22,7 +22,7 @@ export function SiteFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className={publicChrome}>
       <SiteHeader />
-      <main className="min-h-0 flex-1 shrink-0 pt-[5.75rem] md:pt-[6.5rem]">{children}</main>
+      <main className="min-h-0 flex-1 shrink-0 overflow-x-clip pt-[5.75rem] md:pt-[6.5rem]">{children}</main>
       <SiteFooter />
     </div>
   );

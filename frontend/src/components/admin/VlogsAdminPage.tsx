@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assetUrl } from "@/api/client";
 import { adminFetch, readAdminToken, type PageMeta } from "@/lib/admin-fetch";
+import { sanitizeAdminSlug, slugifyFromHeading } from "@/lib/admin-slug";
 import { AdminRichTextEditor } from "@/components/admin/AdminRichTextEditor";
 import { Modal } from "@/components/admin/Modal";
 import { PaginationBar } from "@/components/admin/PaginationBar";
@@ -378,6 +379,7 @@ export function VlogsAdminPage() {
   const [attachRole, setAttachRole] = useState("video");
   const [attachById, setAttachById] = useState("");
   const [busyUpload, setBusyUpload] = useState(false);
+  const slugSyncedFromHeadingRef = useRef(true);
 
   const activeVlogId = editRow?.id ?? null;
 
@@ -416,6 +418,7 @@ export function VlogsAdminPage() {
   }, [load]);
 
   function openCreate() {
+    slugSyncedFromHeadingRef.current = true;
     setSlug("");
     setHeading("");
     setDescription("");
@@ -428,8 +431,9 @@ export function VlogsAdminPage() {
   }
 
   function openEdit(row: VlogRow) {
+    slugSyncedFromHeadingRef.current = false;
     setEditRow(row);
-    setSlug(row.slug);
+    setSlug(sanitizeAdminSlug(row.slug));
     setHeading(row.heading);
     setDescription(row.description ?? "");
     setSortOrder(row.sortOrder != null ? String(row.sortOrder) : "");
@@ -444,7 +448,7 @@ export function VlogsAdminPage() {
     if (!token) return;
     const descPlain = stripHtmlToPlainText(description).trim();
     const body: Record<string, unknown> = {
-      slug: slug.trim(),
+      slug: sanitizeAdminSlug(slug.trim()),
       heading: heading.trim(),
       description: descPlain === "" ? undefined : description.trim(),
       published,
@@ -690,12 +694,32 @@ export function VlogsAdminPage() {
       >
         <form id="vlog-form" className="space-y-3" onSubmit={saveVlog}>
           <label className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
-            Slug
-            <input className="hcode-input normal-case tracking-normal" value={slug} onChange={(e) => setSlug(e.target.value)} required />
+            Heading
+            <input
+              className="hcode-input normal-case tracking-normal"
+              value={heading}
+              onChange={(e) => {
+                const v = e.target.value;
+                setHeading(v);
+                if (slugSyncedFromHeadingRef.current) setSlug(slugifyFromHeading(v));
+              }}
+              required
+            />
           </label>
           <label className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
-            Heading
-            <input className="hcode-input normal-case tracking-normal" value={heading} onChange={(e) => setHeading(e.target.value)} required />
+            Slug
+            <span className="mb-1 mt-0.5 block font-brand text-[10px] font-normal normal-case leading-snug tracking-normal text-hcode-muted">
+              Auto-filled from Heading on new vlogs until you edit. Lowercase letters, digits, underscores only.
+            </span>
+            <input
+              className="hcode-input normal-case tracking-normal"
+              value={slug}
+              onChange={(e) => {
+                slugSyncedFromHeadingRef.current = false;
+                setSlug(sanitizeAdminSlug(e.target.value));
+              }}
+              required
+            />
           </label>
           <label className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
             Description

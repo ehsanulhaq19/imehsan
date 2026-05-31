@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Not, Repository } from 'typeorm';
+import { Brackets, FindOptionsWhere, Not, Repository } from 'typeorm';
 import { CaseStudyMedia } from '../../database/entities/case-study-media.entity';
 import { CaseStudy } from '../../database/entities/case-study.entity';
 
@@ -61,6 +61,13 @@ export class CaseStudiesRepository {
       );
     }
     return qb.getManyAndCount();
+  }
+
+  async slugInUse(slug: string, excludeId?: string): Promise<boolean> {
+    const where: FindOptionsWhere<CaseStudy> =
+      excludeId !== undefined ? { slug, id: Not(excludeId) } : { slug };
+    const count = await this.repo.count({ where });
+    return count > 0;
   }
 
   create(data: Partial<CaseStudy>) {

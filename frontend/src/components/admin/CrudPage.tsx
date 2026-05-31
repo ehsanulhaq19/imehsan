@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { adminFetch, readAdminToken, type PageMeta } from "@/lib/admin-fetch";
 import { stripHtmlToPlainText } from "@/lib/html-plain";
+import { sanitizeAdminSlug, slugifyFromHeading } from "@/lib/admin-slug";
 import { AdminRichTextEditor } from "@/components/admin/AdminRichTextEditor";
 import { Modal } from "@/components/admin/Modal";
 import { PaginationBar } from "@/components/admin/PaginationBar";
@@ -50,6 +51,14 @@ export function CrudPage({
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
+  const slugSyncedFromHeadingRef = useRef(false);
+
+  const slugSourceField = useMemo(() => {
+    const hasSlug = fields.some((f) => f.name === "slug");
+    if (!hasSlug) return null;
+    const src = fields.find((f) => f.name === "heading" || f.name === "title");
+    return src?.name ?? null;
+  }, [fields]);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -73,6 +82,7 @@ export function CrudPage({
   }, [load]);
 
   function openCreate() {
+    slugSyncedFromHeadingRef.current = true;
     const initial: Record<string, string> = {};
     for (const f of fields) {
       if (f.type === "checkbox") initial[f.name] = "false";
@@ -85,6 +95,7 @@ export function CrudPage({
   }
 
   function openEdit(row: Record<string, unknown>) {
+    slugSyncedFromHeadingRef.current = false;
     const initial: Record<string, string> = {};
     const id = String(row.id ?? "");
     setEditId(id);
@@ -92,10 +103,20 @@ export function CrudPage({
       const v = row[f.name];
       if (f.type === "checkbox") initial[f.name] = v ? "true" : "false";
       else if (v === null || v === undefined) initial[f.name] = "";
-      else initial[f.name] = String(v);
+      else initial[f.name] = f.name === "slug" ? sanitizeAdminSlug(String(v)) : String(v);
     }
     setForm(initial);
     setModal("edit");
+  }
+
+  function patchPlainField(name: string, value: string) {
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      if (slugSourceField !== null && name === slugSourceField && slugSyncedFromHeadingRef.current) {
+        next.slug = slugifyFromHeading(value);
+      }
+      return next;
+    });
   }
 
   function buildBody(): Record<string, unknown> {
@@ -123,6 +144,12 @@ export function CrudPage({
       }
       if (raw.trim() === "") continue;
       body[f.name] = raw;
+    }
+    const hasSlugField = fields.some((fld) => fld.name === "slug");
+    if (hasSlugField && typeof body.slug === "string") {
+      const s = sanitizeAdminSlug(body.slug);
+      if (s === "") delete body.slug;
+      else body.slug = s;
     }
     return body;
   }
@@ -316,7 +343,11 @@ export function CrudPage({
                 <textarea
                   className="mt-1 min-h-[88px] w-full rounded-lg border border-hcode-input bg-card px-3 py-2 font-brand text-fp-small normal-case text-foreground outline-none transition-colors focus:border-brand-tertiary focus:ring-2 focus:ring-brand-tertiary/20 dark:border-neutral-600 dark:bg-neutral-950/50"
                   value={form[f.name] ?? ""}
-                  onChange={(e) => setForm((s) => ({ ...s, [f.name]: e.target.value }))}
+                  onChange={(e) =>
+                    slugSourceField !== null && f.name === slugSourceField
+                      ? patchPlainField(f.name, e.target.value)
+                      : setForm((s) => ({ ...s, [f.name]: e.target.value }))
+                  }
                 />
               </label>
             ) : f.type === "richtext" ? (
@@ -351,11 +382,29 @@ export function CrudPage({
             ) : (
               <label key={f.name} className="font-brand block text-fp-caption font-semibold uppercase tracking-[0.08em] text-brand-fg dark:text-neutral-50">
                 {f.label}
+                {slugSourceField !== null && f.name === "slug" ? (
+                  <span className="mb-1 mt-0.5 block font-brand text-[10px] font-normal normal-case leading-snug tracking-normal text-hcode-muted">
+                    Auto-filled from {slugSourceField === "heading" ? "Heading" : "Title"} until you edit this field. Use lowercase letters,
+                    digits, and underscores only.
+                  </span>
+                ) : null}
                 <input
                   type={f.type === "number" ? "number" : f.type}
                   className="hcode-input normal-case tracking-normal"
                   value={form[f.name] ?? ""}
-                  onChange={(e) => setForm((s) => ({ ...s, [f.name]: e.target.value }))}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (f.name === "slug") {
+                      slugSyncedFromHeadingRef.current = false;
+                      setForm((s) => ({ ...s, slug: sanitizeAdminSlug(v) }));
+                      return;
+                    }
+                    if (slugSourceField !== null && f.name === slugSourceField) {
+                      patchPlainField(f.name, v);
+                      return;
+                    }
+                    setForm((s) => ({ ...s, [f.name]: v }));
+                  }}
                 />
               </label>
             ),

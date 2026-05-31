@@ -36,7 +36,10 @@ export function Scroll3DSection({ children, className = "", innerClassName = "" 
   const z = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [-24, 0, -12]);
 
   return (
-    <section ref={ref} className={`relative isolate [perspective:1100px] [perspective-origin:50%_12%] ${className}`}>
+    <section
+      ref={ref}
+      className={`relative isolate overflow-x-clip [perspective:1100px] [perspective-origin:50%_12%] ${className}`}
+    >
       <motion.div
         style={{
           rotateX,

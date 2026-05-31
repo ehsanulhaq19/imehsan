@@ -22,9 +22,13 @@ export function useInfinitePublicList<T>(
   metaRef.current = meta;
 
   const loadMore = useCallback(async () => {
+    console.log("---loadMore---", basePath, limit);
     if (busy.current) return;
+    console.log("---not busy---");
     const m = metaRef.current;
+    console.log("---meta---", m);
     if (m.page >= m.totalPages) return;
+    console.log("---not at end---");
     busy.current = true;
     const nextPage = m.page + 1;
     const path = buildPath(basePath, nextPage, limit);

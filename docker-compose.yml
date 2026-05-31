@@ -47,6 +47,8 @@ services:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      # Next.js rewrites /uploads and /api to the API from inside this container (SSR, same-origin URLs).
+      BACKEND_INTERNAL_URL: http://backend:${PORT:-3001}
       WATCHPACK_POLLING: "${WATCHPACK_POLLING:-true}"
     volumes:
       - ./frontend:/app

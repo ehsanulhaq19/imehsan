@@ -110,9 +110,16 @@ export function ExternalLinkPreview({
       ) : null}
 
       {model.kind === "pdf" ? (
-        <div className={`${frameBase} min-h-[min(82vh,800px)]`}>
-          <iframe title="PDF preview" src={model.embedUrl} className="min-h-[min(82vh,800px)] h-[min(82vh,800px)] w-full" />
-        </div>
+        <>
+          {model.embedBlocked ? (
+            <p className="mt-3 max-w-2xl font-brand text-[13px] font-light leading-relaxed text-brand-muted">
+              Inline preview uses a third-party viewer because the host blocks direct embedding. If it does not load, open the certificate directly.
+            </p>
+          ) : null}
+          <div className={`${frameBase} min-h-[min(70vh,800px)]`}>
+            <iframe title="PDF preview" src={model.embedUrl} className="min-h-[min(70vh,800px)] h-[min(70vh,800px)] w-full" />
+          </div>
+        </>
       ) : null}
 
       {model.kind === "office" ? (
@@ -120,8 +127,8 @@ export function ExternalLinkPreview({
           <p className="mt-3 max-w-2xl font-brand text-[13px] font-light leading-relaxed text-brand-muted">
             Preview uses Microsoft Office Online. The file must be publicly reachable over HTTPS.
           </p>
-          <div className={`${frameBase} min-h-[min(82vh,800px)]`}>
-            <iframe title="Office document preview" src={model.embedUrl} className="min-h-[min(82vh,800px)] h-[min(82vh,800px)] w-full" />
+          <div className={`${frameBase} min-h-[min(70vh,800px)]`}>
+            <iframe title="Office document preview" src={model.embedUrl} className="min-h-[min(70vh,800px)] h-[min(70vh,800px)] w-full" />
           </div>
         </>
       ) : null}

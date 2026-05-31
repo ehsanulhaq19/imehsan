@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const backend =
   process.env.API_PROXY_TARGET?.replace(/\/$/, "") ||
-  process.env.BACKEND_INTERNAL_URL?.replace(/\/$/, "");
+  process.env.BACKEND_INTERNAL_URL?.replace(/\/$/, "") ||
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
 
 const nextConfig = {
   async rewrites() {

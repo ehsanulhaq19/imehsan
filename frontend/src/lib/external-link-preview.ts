@@ -10,7 +10,7 @@ export type ExternalPreviewModel =
   | { kind: "google-drive-file"; embedUrl: string; openUrl: string }
   | { kind: "google-drive-folder"; openUrl: string }
   | { kind: "google-docs"; embedUrl: string; openUrl: string; docKind: GoogleDocKind }
-  | { kind: "pdf"; openUrl: string; embedStrategy: "direct"; embedUrl: string }
+  | { kind: "pdf"; openUrl: string; embedStrategy: "direct"; embedUrl: string; embedBlocked: boolean }
   | { kind: "office"; openUrl: string; embedUrl: string }
   | { kind: "video"; src: string; openUrl: string }
   | { kind: "generic"; openUrl: string; hostname: string; displayHost: string };
@@ -19,8 +19,55 @@ const VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?|#|$)/i;
 const PDF_EXT = /\.pdf(\?|#|$)/i;
 const OFFICE_EXT = /\.(docx|doc|pptx|ppt|xlsx|xls)(\?|#|$)/i;
 
+function isDatacampStatementUrl(url: URL): boolean {
+  const host = url.hostname.toLowerCase();
+  if (host !== "datacamp.com" && host !== "www.datacamp.com") return false;
+  return /^\/statement-of-accomplishment(?:\/|$)/i.test(url.pathname);
+}
+
+/** True when the URL serves (or is intended to serve) PDF bytes without a `.pdf` path suffix. */
+function isPdfServingUrl(url: URL): boolean {
+  const pathname = url.pathname;
+  const lastSegment = pathname.split("/").pop() ?? "";
+
+  if (PDF_EXT.test(lastSegment) || pathname.toLowerCase().endsWith(".pdf")) {
+    return true;
+  }
+
+  const format = url.searchParams.get("format")?.toLowerCase();
+  if (format === "pdf") return true;
+
+  const type = url.searchParams.get("type")?.toLowerCase();
+  if (type === "pdf" || type === "application/pdf") return true;
+
+  const mime = url.searchParams.get("mime")?.toLowerCase();
+  if (mime === "application/pdf") return true;
+
+  if (url.searchParams.get("download")?.toLowerCase() === "pdf") return true;
+
+  // DataCamp certificates: `?raw=1` returns the PDF file.
+  if (isDatacampStatementUrl(url)) {
+    const raw = url.searchParams.get("raw");
+    if (raw === "1" || raw === "true") return true;
+  }
+
+  for (const value of Array.from(url.searchParams.values())) {
+    if (PDF_EXT.test(value) || value.toLowerCase().endsWith(".pdf")) return true;
+  }
+
+  return false;
+}
+
+/** Hosts that block cross-origin iframe/object embedding for credential PDFs. */
+function pdfEmbeddingBlocked(url: URL): boolean {
+  return isDatacampStatementUrl(url);
+}
+
 /** Office Online viewer — requires a public HTTPS URL. */
 const OFFICE_VIEWER = "https://view.officeapps.live.com/op/embed.aspx";
+
+/** Fallback viewer for PDF hosts that block cross-origin iframe embedding. */
+const GOOGLE_PDF_VIEWER = "https://docs.google.com/gview";
 
 function googleDriveFileId(url: URL): string | null {
   const fm = url.pathname.match(/\/file\/d\/([^/]+)/);
@@ -117,10 +164,19 @@ export function classifyExternalHref(raw: string): ExternalPreviewModel | null {
   const pathname = url.pathname.split("/").pop() ?? "";
   const pathOrName = pathname + url.search;
 
-  if (PDF_EXT.test(pathname) || url.pathname.toLowerCase().endsWith(".pdf")) {
+  if (isPdfServingUrl(url)) {
     const https = url.protocol === "https:" ? openUrl : null;
     if (!https) return { kind: "generic", openUrl, hostname: url.hostname, displayHost: displayHostname(url.hostname) };
-    return { kind: "pdf", openUrl, embedStrategy: "direct", embedUrl: https };
+    const embedBlocked = pdfEmbeddingBlocked(url);
+    return {
+      kind: "pdf",
+      openUrl,
+      embedStrategy: "direct",
+      embedUrl: embedBlocked
+        ? `${GOOGLE_PDF_VIEWER}?url=${encodeURIComponent(https)}&embedded=true`
+        : https,
+      embedBlocked,
+    };
   }
 
   if (OFFICE_EXT.test(pathname)) {

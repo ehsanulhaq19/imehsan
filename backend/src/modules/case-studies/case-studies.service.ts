@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CaseStudy } from '../../database/entities/case-study.entity';
 import { CaseStudiesRepository } from './case-studies.repository';
 
@@ -24,12 +24,24 @@ export class CaseStudiesService {
     return this.repo.listAdmin();
   }
 
-  create(data: Partial<CaseStudy>) {
-    return this.repo.create(data);
+  async create(data: Partial<CaseStudy>) {
+    const slug = data.slug!.trim();
+    if (await this.repo.slugInUse(slug)) {
+      throw new ConflictException('A case study with this slug already exists');
+    }
+    return this.repo.create({ ...data, slug });
   }
 
-  update(id: string, data: Partial<CaseStudy>) {
-    return this.repo.update(id, data);
+  async update(id: string, data: Partial<CaseStudy>) {
+    const patch: Partial<CaseStudy> = { ...data };
+    if (patch.slug !== undefined) {
+      const slug = patch.slug.trim();
+      if (await this.repo.slugInUse(slug, id)) {
+        throw new ConflictException('A case study with this slug already exists');
+      }
+      patch.slug = slug;
+    }
+    return this.repo.update(id, patch);
   }
 
   remove(id: string) {

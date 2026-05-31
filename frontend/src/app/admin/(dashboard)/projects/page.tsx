@@ -12,8 +12,8 @@ export default function AdminProjectsPage() {
         { key: "published", label: "Published" },
       ]}
       fields={[
-        { name: "slug", label: "Slug", type: "text" },
         { name: "heading", label: "Heading", type: "text" },
+        { name: "slug", label: "Slug", type: "text" },
         { name: "coverImageUrl", label: "Cover image", type: "image-upload" },
         { name: "details", label: "Details", type: "richtext" },
         { name: "link", label: "Link", type: "url" },

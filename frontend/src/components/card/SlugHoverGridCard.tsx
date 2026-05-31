@@ -32,22 +32,50 @@ function FooterNavLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-function OverlayWhitePanel({ title, blurb, href }: { title: string; blurb?: string; href: string }) {
+function OverlayWhitePanel({
+  title,
+  blurb,
+  href,
+  compact,
+}: {
+  title: string;
+  blurb?: string;
+  href: string;
+  compact?: boolean;
+}) {
   return (
     <div className="flex h-full min-h-0 flex-col bg-white/[0.97] text-brand-fg dark:bg-neutral-100">
-      <header className="shrink-0 border-b border-brand-fg/[0.08] px-5 pb-4 pt-5 dark:border-neutral-950/10">
-        <p className="line-clamp-3 font-brand text-sm font-bold uppercase leading-snug tracking-[0.06em] text-brand-fg">{title}</p>
+      <header
+        className={`shrink-0 border-b border-brand-fg/[0.08] dark:border-neutral-950/10 ${
+          compact ? "px-3 pb-2.5 pt-3" : "px-5 pb-4 pt-5"
+        }`}
+      >
+        <p
+          className={`line-clamp-3 font-brand font-bold uppercase leading-snug tracking-[0.06em] text-brand-fg ${
+            compact ? "text-[11px]" : "text-sm"
+          }`}
+        >
+          {title}
+        </p>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
+      <div className={`min-h-0 flex-1 overflow-y-auto ${compact ? "px-3 py-3" : "px-5 py-6"}`}>
         {blurb ? (
-          <p className="whitespace-pre-wrap break-words font-brand text-[13px] font-light leading-relaxed text-neutral-700 [overflow-wrap:anywhere]">
+          <p
+            className={`whitespace-pre-wrap break-words font-brand font-light leading-relaxed text-neutral-700 [overflow-wrap:anywhere] ${
+              compact ? "text-[11px]" : "text-[13px]"
+            }`}
+          >
             {blurb}
           </p>
         ) : null}
       </div>
 
-      <footer className="flex shrink-0 flex-row items-center justify-end border-t border-brand-fg/[0.08] px-5 pb-5 pt-4 dark:border-neutral-950/10">
+      <footer
+        className={`flex shrink-0 flex-row items-center justify-end border-t border-brand-fg/[0.08] dark:border-neutral-950/10 ${
+          compact ? "px-3 pb-3 pt-2.5" : "px-5 pb-5 pt-4"
+        }`}
+      >
         <FooterNavLink href={href} label={title} />
       </footer>
     </div>
@@ -63,6 +91,8 @@ export type SlugHoverGridCardProps = {
   videoUrl?: string | null;
   delay?: number;
   className?: string;
+  /** Denser thumbnail + overlay typography for masonry-style landing grids */
+  density?: "default" | "compact";
   showVideoBadge?: boolean;
   /** First visible image above the fold (e.g. landing hero grid). */
   imagePriority?: boolean;
@@ -76,9 +106,11 @@ export function SlugHoverGridCard({
   videoUrl,
   delay = 0,
   className,
+  density = "default",
   showVideoBadge = true,
   imagePriority = false,
 }: SlugHoverGridCardProps) {
+  const compact = density === "compact";
   const hasImagePath = Boolean(imageUrl?.trim());
   const hasVid = Boolean(videoUrl?.trim());
   const hasMedia = hasImagePath || hasVid;
@@ -88,9 +120,13 @@ export function SlugHoverGridCard({
 
   return (
     <ScrollReveal delay={delay} className={className}>
-      <article className="overflow-hidden rounded-xl border border-brand-outline-soft/35 bg-brand-surface-low/30 shadow-[0_22px_50px_-32px_rgb(11_28_48_/0.55)] transition-transform duration-300 hover:-translate-y-1">
+      <article
+        className={`overflow-hidden rounded-xl border border-brand-outline-soft/35 bg-brand-surface-low/30 shadow-[0_22px_50px_-32px_rgb(11_28_48_/0.55)] transition-transform duration-300 hover:-translate-y-1 ${compact ? "rounded-lg" : ""}`}
+      >
         <div className="group block">
-          <div className="relative isolate aspect-[5/5] w-full overflow-hidden bg-neutral-900/10">
+          <div
+            className={`relative isolate w-full overflow-hidden bg-neutral-900/10 ${compact ? "aspect-[16/11]" : "aspect-[5/5]"}`}
+          >
             {hasMedia ? (
               <>
                 {hasVid ? (
@@ -108,30 +144,42 @@ export function SlugHoverGridCard({
                     alt=""
                     fill
                     priority={imagePriority}
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                    sizes="(max-width:640px) 100vw, 50vw"
+                    className="object-unset transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                    sizes={compact ? "(max-width:640px) 100vw, (max-width:1024px) 33vw, 25vw" : "(max-width:640px) 100vw, 50vw"}
                     unoptimized
                   />
                 )}
 
                 {hasVid && showVideoBadge ? (
-                  <span className="pointer-events-none absolute right-2 top-2 z-[5] flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm">
-                    <VideoGlyph className="h-4 w-4" />
+                  <span
+                    className={`pointer-events-none absolute right-2 top-2 z-[5] flex items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm ${
+                      compact ? "h-7 w-7" : "h-9 w-9"
+                    }`}
+                  >
+                    <VideoGlyph className={compact ? "h-3 w-3" : "h-4 w-4"} />
                   </span>
                 ) : null}
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] bg-gradient-to-t from-black/82 via-black/38 to-transparent px-4 pb-4 pt-14">
-                  <p className="font-brand text-sm font-bold uppercase leading-tight tracking-[0.05em] text-white line-clamp-2 drop-shadow-sm">
+                <div
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] bg-gradient-to-t from-black/82 via-black/38 to-transparent ${
+                    compact ? "px-3 pb-3 pt-9" : "px-4 pb-4 pt-14"
+                  }`}
+                >
+                  <p
+                    className={`font-brand font-bold uppercase leading-tight tracking-[0.05em] text-white drop-shadow-sm ${
+                      compact ? "line-clamp-1 text-[11px]" : "line-clamp-2 text-sm"
+                    }`}
+                  >
                     {title}
                   </p>
                 </div>
 
                 <div className="pointer-events-none invisible absolute inset-0 z-10 flex translate-y-full flex-col transition-[transform,visibility] duration-300 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0">
-                  <OverlayWhitePanel href={href} title={title} blurb={blurb} />
+                  <OverlayWhitePanel compact={compact} href={href} title={title} blurb={blurb} />
                 </div>
               </>
             ) : (
-              <OverlayWhitePanel href={href} title={title} blurb={blurb} />
+              <OverlayWhitePanel compact={compact} href={href} title={title} blurb={blurb} />
             )}
           </div>
         </div>

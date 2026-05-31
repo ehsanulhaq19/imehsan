@@ -10,8 +10,15 @@ async function bootstrap() {
   mkdirSync(uploadDir, { recursive: true });
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setGlobalPrefix('api');
+
+  /**
+   * Uploaded files must stay at `/uploads/*` (URLs stored in DB as `/uploads/...`).
+   * `setGlobalPrefix('api')` would otherwise expect `/api/uploads/*` and break clients.
+   */
   app.useStaticAssets(uploadDir, { prefix: '/uploads/' });
+  app.setGlobalPrefix('api', {
+    exclude: ['uploads/:filename'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -12,8 +12,8 @@ export default function AdminCaseStudiesPage() {
         { key: "published", label: "Published" },
       ]}
       fields={[
-        { name: "slug", label: "Slug", type: "text" },
         { name: "title", label: "Title", type: "text" },
+        { name: "slug", label: "Slug", type: "text" },
         { name: "coverImageUrl", label: "Cover image", type: "image-upload" },
         { name: "description", label: "Description", type: "richtext" },
         { name: "externalLink", label: "External link", type: "url" },

@@ -1,0 +1,301 @@
+{
+    "personal_info": {
+      "name": "Ehsan Ul Haq",
+      "title": [
+        "Senior Full Stack Web Engineer",
+        "Senior Mobile Application Engineer",
+        "Senior AI Engineer"
+      ],
+      "location": "Lahore, Pakistan",
+      "phone": "+923244971258",
+      "email": "ehsanulhaq@imehsan.com",
+      "linkedin": "https://www.linkedin.com/in/ehsan-ul-haq-60412b193/"
+    },
+  
+    "professional_summary": {
+      "experience_years": "7+",
+      "overview": "Results-driven Senior Full Stack Web, Mobile, and AI Engineer with expertise in designing scalable web applications, mobile applications, backend systems, cloud-native architectures, microservices, DevOps, and AI-powered platforms. Strong background in SaaS, e-commerce, logistics, healthcare, communication platforms, and AI product development."
+    },
+  
+    "specializations": [
+      "Full Stack Web Development",
+      "Backend Architecture",
+      "Frontend Engineering",
+      "Mobile Application Development",
+      "AI Product Engineering",
+      "Microservices Architecture",
+      "Cloud Infrastructure",
+      "DevOps & CI/CD",
+      "Real-time Communication Systems",
+      "SaaS Development",
+      "E-commerce Platforms",
+      "API Engineering"
+    ],
+  
+    "skills": {
+      "frontend": [
+        "JavaScript",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "SASS",
+        "Tailwind CSS",
+        "React.js",
+        "Vue.js",
+        "Nuxt.js",
+        "Next.js",
+        "jQuery",
+        "ES6+",
+        "NPM"
+      ],
+  
+      "backend": [
+        "Node.js",
+        "Express.js",
+        "NestJS",
+        "Python",
+        "Django",
+        "Django ORM",
+        "Django Rest Framework",
+        "FastAPI",
+        "Flask",
+        "Laravel",
+        "RESTful APIs",
+        "GraphQL",
+        "API Gateway",
+        "API Design",
+        "JWT Authentication",
+        "OAuth",
+        "WebSockets",
+        "Celery"
+      ],
+  
+      "mobile": [
+        "React Native",
+        "Cross-platform Mobile Development",
+        "Mobile Commerce Applications",
+        "Real-time Mobile Applications",
+        "App Deployment & Optimization"
+      ],
+  
+      "ai_engineering": [
+        "OpenAI Integration",
+        "LLM-based Applications",
+        "Multi-Provider AI Integration",
+        "AI SaaS Development",
+        "Vector Databases",
+        "AI Chatbots",
+        "Intelligent Search Systems",
+        "Context-Aware AI Systems",
+        "Prompt Engineering",
+        "AI Analytics",
+        "Model Configuration",
+        "AI Workflow Automation"
+      ],
+  
+      "databases": [
+        "PostgreSQL",
+        "MongoDB",
+        "Redis",
+        "Memcached",
+        "SQL",
+        "NoSQL",
+        "RDBMS",
+        "SQLAlchemy"
+      ],
+  
+      "cloud_devops": [
+        "AWS",
+        "AWS Lambda",
+        "AWS EC2",
+        "AWS S3",
+        "SQS",
+        "Azure",
+        "Google Cloud Platform (GCP)",
+        "Docker",
+        "CI/CD",
+        "Vercel",
+        "Apache",
+        "Apache Spark",
+        "Sentry",
+        "Git"
+      ],
+  
+      "architecture_and_system_design": [
+        "Microservices Architecture",
+        "Scalable System Design",
+        "Event-Driven Architecture",
+        "Real-Time Systems",
+        "Distributed Systems",
+        "SDLC",
+        "Agile Methodology",
+        "Performance Optimization"
+      ],
+  
+      "business_domain_expertise": [
+        "E-commerce",
+        "SaaS",
+        "Logistics",
+        "Healthcare",
+        "Beauty Platforms",
+        "Food Delivery",
+        "Communication Systems",
+        "CRM/CMS",
+        "Building Management Systems",
+        "Scheduling Platforms"
+      ],
+  
+      "integrations": [
+        "Stripe",
+        "Payment Gateways",
+        "Google Calendar API",
+        "Outlook Calendar API",
+        "Google Drive Integration",
+        "WebRTC",
+        "Real-Time Messaging",
+        "Video Calling",
+        "Socket-Based Event Handling"
+      ]
+    },
+  
+    "experience": [
+      {
+        "role": "Senior Software Engineer",
+        "company": "Freelance",
+        "duration": "06/2022 - Present",
+        "type": "Remote",
+        "key_highlights": [
+          "Built B2B and B2C platforms for international clients",
+          "Architected GCCS complaint resolution system",
+          "Delivered scalable SaaS and e-commerce MVPs",
+          "Led full SDLC with 100% on-time launches",
+          "Reduced average time-to-market by 40%"
+        ]
+      },
+      {
+        "role": "Senior Software Engineer",
+        "company": "Technology Innovation",
+        "duration": "02/2024 - 05/2025",
+        "location": "Lahore, Pakistan",
+        "key_highlights": [
+          "Built high-traffic food e-commerce platforms",
+          "Improved site speed by 45%",
+          "Reduced page load time under 2 seconds",
+          "Led Shopware integrations",
+          "Improved conversion rates by 25%"
+        ]
+      },
+      {
+        "role": "Senior Software Engineer",
+        "company": "WorkHub",
+        "duration": "02/2022 - 02/2024",
+        "location": "Lahore, Pakistan",
+        "key_highlights": [
+          "Built AI chatbot WorkBot using OpenAI",
+          "Implemented vector database search",
+          "Developed real-time communication platform",
+          "Integrated Google & Outlook scheduling",
+          "Designed microservices architecture"
+        ]
+      },
+      {
+        "role": "Software Engineer",
+        "company": "DigiLynx",
+        "duration": "07/2020 - 02/2022",
+        "key_highlights": [
+          "Built multiple digital platforms",
+          "Implemented cloud infrastructure",
+          "Reduced deployment time by 60%",
+          "Improved automated testing coverage"
+        ]
+      },
+      {
+        "role": "Junior Software Engineer",
+        "company": "Emerssive Solutions",
+        "duration": "07/2019 - 07/2020",
+        "key_highlights": [
+          "Built multilingual school management systems",
+          "Developed automated exam scoring systems",
+          "Built React Native e-commerce mobile app",
+          "Improved mobile order conversions"
+        ]
+      }
+    ],
+  
+    "projects": [
+      {
+        "name": "Midora AI",
+        "category": "AI SaaS Platform",
+        "tech_focus": [
+          "LLMs",
+          "Multi-provider AI",
+          "Analytics",
+          "Admin/Billing"
+        ]
+      },
+      {
+        "name": "Work Bot",
+        "category": "AI Chatbot Platform",
+        "tech_focus": [
+          "OpenAI",
+          "Vector DB",
+          "Document Search"
+        ]
+      },
+      {
+        "name": "Connect Platform",
+        "category": "Real-Time Communication",
+        "tech_focus": [
+          "Messaging",
+          "Video/Audio Calls",
+          "AWS"
+        ]
+      },
+      {
+        "name": "Scheduling App",
+        "category": "Productivity Platform",
+        "tech_focus": [
+          "Google Calendar",
+          "Outlook",
+          "Scheduling"
+        ]
+      },
+      {
+        "name": "One Sale",
+        "category": "Wholesale E-commerce"
+      },
+      {
+        "name": "Lights Canada",
+        "category": "E-commerce"
+      },
+      {
+        "name": "GCCS",
+        "category": "Building Management Platform"
+      },
+      {
+        "name": "Kamlink",
+        "category": "Healthcare CRM/CMS"
+      },
+      {
+        "name": "Care Cart",
+        "category": "Food Delivery Backend"
+      }
+    ],
+  
+    "education": {
+      "degree": "BS (Hons) Computer Science",
+      "institution": "University of Punjab (PUCIT)",
+      "duration": "2016 - 2020"
+    },
+  
+    "career_identity": {
+      "primary_positioning": "Senior Full Stack + AI Engineer",
+      "secondary_positioning": [
+        "Backend Architect",
+        "Cloud & DevOps Engineer",
+        "Mobile Application Engineer",
+        "AI SaaS Engineer",
+        "Real-Time Systems Engineer"
+      ]
+    }
+  }

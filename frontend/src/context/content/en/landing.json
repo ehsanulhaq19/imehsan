@@ -8,23 +8,23 @@
     "secondaryCta": "Book consultation"
   },
   "trustStrip": {
-    "label": "Senior delivery focus",
-    "items": ["Production APIs", "LLM systems", "Commerce platforms", "Cloud operations", "Executive partnerships"]
+    "label": "Where the portfolio stays operational",
+    "lead": "From schema design to guarded LLM workloads—disciplined handoffs teams can staff against.",
+    "items": ["APIs under load", "LLM/RAG pipelines", "Headless commerce", "AWS/GCP footprints", "Exec-ready timelines"]
   },
   "metrics": [
     {
       "valueKey": "experienceYears",
-      "label": "Years shipping production grade software"
+      "label": "Years spanning web backends, typed services, realtime channels, assistants, and release discipline."
+    },
+    {
+      "valueKey": "specializationCount",
+      "label": "Anchored specialties—architecture, stacks, realtime systems, SaaS launches, assistants, observability."
     },
     {
       "valueKey": "static",
-      "staticValue": "Full stack + AI",
-      "label": "Typed services, data planes, models, evaluations, and user facing surfaces in one lane"
-    },
-    {
-      "valueKey": "static",
-      "staticValue": "Remote friendly",
-      "label": "Specs, rituals, and measurable milestones engineered for distributed teams"
+      "staticValue": "24/7",
+      "label": "Remote-ready collaboration with Lahore HQ—async specs, demos, telemetry, and production ownership."
     }
   ],
   "philosophy": {

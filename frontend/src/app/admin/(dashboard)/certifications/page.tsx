@@ -12,8 +12,8 @@ export default function AdminCertificationsPage() {
         { key: "published", label: "Published" },
       ]}
       fields={[
-        { name: "slug", label: "Slug", type: "text" },
         { name: "heading", label: "Heading", type: "text" },
+        { name: "slug", label: "Slug", type: "text" },
         { name: "coverImageUrl", label: "Cover image", type: "image-upload" },
         { name: "detail", label: "Detail", type: "richtext" },
         { name: "linkUrl", label: "Link URL", type: "url" },
