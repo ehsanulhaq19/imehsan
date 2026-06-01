@@ -5,7 +5,7 @@ import { fetchCertificationsPage } from "@/api/certifications";
 import { fetchGitReposList } from "@/api/git-repos";
 import type { ProjectListRow } from "@/api/projects";
 import { fetchProjectsPage } from "@/api/projects";
-import { fetchTestimonialsList } from "@/api/testimonials";
+import { fetchTestimonialsPage } from "@/api/testimonials";
 import type { VlogListRow } from "@/api/vlogs";
 import { fetchVlogsPage } from "@/api/vlogs";
 import {
@@ -35,12 +35,12 @@ type Testimonial = {
 };
 
 export default async function HomePage() {
-  const [projectsRes, casesRes, repos, vlogsRes, testimonials, certsRes] = await Promise.all([
+  const [projectsRes, casesRes, repos, vlogsRes, testimonialsRes, certsRes] = await Promise.all([
     fetchProjectsPage(1, 24),
     fetchCaseStudiesPage<CaseStudy>(1, 24),
     fetchGitReposList<Repo[]>(),
     fetchVlogsPage(1, 24),
-    fetchTestimonialsList<Testimonial[]>(),
+    fetchTestimonialsPage(1, 3),
     fetchCertificationsPage(1, 24),
   ]);
 
@@ -90,12 +90,17 @@ export default async function HomePage() {
     image: coverForCertification(c),
   }));
 
-  const testimonialItems = (testimonials ?? []).slice(0, 6).map((t: Testimonial) => ({
-    id: t.id,
-    authorName: t.authorName,
-    quote: t.quote,
-    image: coverForTestimonial(t),
-  }));
+  const testimonialInitial = testimonialsRes
+    ? {
+        items: (testimonialsRes.items ?? []).map((t: Testimonial) => ({
+          id: t.id,
+          authorName: t.authorName,
+          quote: t.quote,
+          image: coverForTestimonial(t),
+        })),
+        meta: testimonialsRes.meta,
+      }
+    : null;
 
   return (
     <LandingSections
@@ -104,7 +109,7 @@ export default async function HomePage() {
       repos={repos ?? []}
       vlogs={vlogItems}
       certifications={certItems}
-      testimonials={testimonialItems}
+      testimonialsInitial={testimonialInitial}
     />
   );
 }

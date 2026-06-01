@@ -1,0 +1,225 @@
+{
+  "description": "Sample client reviews for portfolio seeding and content reference. Tone is conversational; quotes align with Ehsan's full stack, AI, SaaS, and commerce delivery background.",
+  "reviews": [
+    {
+      "id": "review-001",
+      "authorName": "James Whitfield",
+      "role": "CTO",
+      "company": "ParcelRoute Logistics",
+      "quote": "We brought Ehsan in when our dispatch dashboard was falling over every Friday peak. He rebuilt the API layer, cleaned up the data model, and gave us real time tracking that actually held up. Our ops team stopped living in spreadsheets within six weeks.",
+      "domain": "Logistics",
+      "approved": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "review-002",
+      "authorName": "Priya Sharma",
+      "role": "Head of Product",
+      "company": "CareBridge Health",
+      "quote": "Ehsan helped us ship a patient intake flow that passed review on the first round. He thinks about edge cases before we even write the ticket, and he documents decisions in a way our clinical advisors can follow.",
+      "domain": "Healthcare",
+      "approved": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "review-003",
+      "authorName": "Marcus Chen",
+      "role": "Founder",
+      "company": "One Sale Wholesale",
+      "quote": "Our wholesale storefront needed custom pricing rules, bulk checkout, and a backend that would not choke during seasonal spikes. Ehsan delivered all three and stayed calm when we changed scope twice. Revenue from repeat buyers went up within the first quarter.",
+      "domain": "E-commerce",
+      "approved": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "review-004",
+      "authorName": "Elena Rodriguez",
+      "role": "Engineering Manager",
+      "company": "WorkHub",
+      "quote": "The WorkBot project was our first serious push into AI for internal knowledge. Ehsan wired up document ingestion, vector search, and guardrails so answers stayed on policy. Support tickets dropped because people could find answers without pinging the team.",
+      "domain": "AI SaaS",
+      "approved": true,
+      "sortOrder": 4
+    },
+    {
+      "id": "review-005",
+      "authorName": "David Okonkwo",
+      "role": "VP Operations",
+      "company": "GCCS Facilities",
+      "quote": "Our complaint resolution workflow was a mess of email threads and manual follow ups. Ehsan mapped the whole process, built the platform, and gave residents a clear status view. Resolution time improved and our team finally had one source of truth.",
+      "domain": "Building management",
+      "approved": true,
+      "sortOrder": 5
+    },
+    {
+      "id": "review-006",
+      "authorName": "Fiona MacLeod",
+      "role": "Marketing Director",
+      "company": "Lights Canada",
+      "quote": "Site speed was hurting conversion and we knew it. Ehsan tightened the storefront, fixed lazy loading issues, and got page loads under two seconds on mobile. The merchandising team noticed the difference in cart completion within weeks.",
+      "domain": "E-commerce",
+      "approved": true,
+      "sortOrder": 6
+    },
+    {
+      "id": "review-007",
+      "authorName": "Rahul Mehta",
+      "role": "Co-founder",
+      "company": "Midora AI",
+      "quote": "We needed someone who could own the full stack and the AI layer without handoffs every sprint. Ehsan built billing, admin tooling, multi provider model routing, and analytics in one coherent system. Investors asked fewer questions about technical risk after the demo.",
+      "domain": "AI SaaS",
+      "approved": true,
+      "sortOrder": 7
+    },
+    {
+      "id": "review-008",
+      "authorName": "Sophie Laurent",
+      "role": "Product Owner",
+      "company": "Connect Platform",
+      "quote": "Real time messaging and video were non negotiable for our launch. Ehsan designed the event flow, handled WebRTC quirks, and kept latency acceptable across regions. Users described the experience as stable, which is rare praise for a v1 comms product.",
+      "domain": "Real-time communication",
+      "approved": true,
+      "sortOrder": 8
+    },
+    {
+      "id": "review-009",
+      "authorName": "Michael Torres",
+      "role": "Technical Lead",
+      "company": "ScheduleFlow",
+      "quote": "Calendar sync with Google and Outlook sounds simple until you hit timezone bugs and duplicate bookings. Ehsan untangled the integration layer and gave us a scheduling app our sales team actually trusts.",
+      "domain": "Productivity",
+      "approved": true,
+      "sortOrder": 9
+    },
+    {
+      "id": "review-010",
+      "authorName": "Anika Patel",
+      "role": "COO",
+      "company": "Care Cart",
+      "quote": "Our food delivery backend was drowning in peak hour orders. Ehsan refactored the order pipeline, added queue based processing, and improved reliability during lunch rushes. Kitchen partners stopped calling us about missed tickets.",
+      "domain": "Food delivery",
+      "approved": true,
+      "sortOrder": 10
+    },
+    {
+      "id": "review-011",
+      "authorName": "Oliver Hughes",
+      "role": "Director of Engineering",
+      "company": "Kamlink Health",
+      "quote": "The CRM and CMS had grown in different directions over years. Ehsan unified the data model, migrated content safely, and kept the clinic staff working through the transition. That kind of careful delivery is hard to find.",
+      "domain": "Healthcare CRM",
+      "approved": true,
+      "sortOrder": 11
+    },
+    {
+      "id": "review-012",
+      "authorName": "Yuki Tanaka",
+      "role": "Product Manager",
+      "company": "FreshBite Commerce",
+      "quote": "Shopware integration was blocking our European rollout. Ehsan led the extension work, fixed checkout edge cases, and paired with our QA until we were confident. Conversion improved after launch and returns from payment errors dropped sharply.",
+      "domain": "E-commerce",
+      "approved": true,
+      "sortOrder": 12
+    },
+    {
+      "id": "review-013",
+      "authorName": "Catherine Brooks",
+      "role": "Founder",
+      "company": "LedgerLane SaaS",
+      "quote": "I hired Ehsan to get from prototype to production in ten weeks. He set up CI, Docker, and staging environments early so we were not scrambling at the end. The MVP launched on time and our first paying customers onboarded without drama.",
+      "domain": "SaaS",
+      "approved": true,
+      "sortOrder": 13
+    },
+    {
+      "id": "review-014",
+      "authorName": "Amir Hassan",
+      "role": "IT Director",
+      "company": "UrbanNest Property Group",
+      "quote": "Security and audit requirements slowed every vendor we tried. Ehsan built auth, role based access, and logging that satisfied our compliance review. He explains trade offs plainly, which made stakeholder meetings much shorter.",
+      "domain": "Enterprise software",
+      "approved": true,
+      "sortOrder": 14
+    },
+    {
+      "id": "review-015",
+      "authorName": "Laura Bergstrom",
+      "role": "Head of Digital",
+      "company": "Glow Beauty Collective",
+      "quote": "Our booking and catalog tools were stitched together with plugins that broke every update. Ehsan rebuilt the customer journey in Next.js with a clean API behind it. Support load went down and the brand team got a CMS they could use without calling dev.",
+      "domain": "Beauty platform",
+      "approved": true,
+      "sortOrder": 15
+    },
+    {
+      "id": "review-016",
+      "authorName": "Daniel Reeves",
+      "role": "Founder",
+      "company": "PromptLayer Tools",
+      "quote": "We needed RAG that stayed grounded and did not hallucinate pricing rules. Ehsan built eval checks, fallback responses, and monitoring so we could see when the model drifted. Our enterprise trial converted because the answers were trustworthy.",
+      "domain": "AI SaaS",
+      "approved": true,
+      "sortOrder": 16
+    },
+    {
+      "id": "review-017",
+      "authorName": "Nina Kowalski",
+      "role": "Operations Lead",
+      "company": "Northstar Fulfillment",
+      "quote": "Deployment used to take half a day and nerves of steel. Ehsan introduced a proper pipeline, containerized services, and runbooks our junior devs could follow. We cut release time by more than half and sleep better on launch nights.",
+      "domain": "Logistics",
+      "approved": true,
+      "sortOrder": 17
+    },
+    {
+      "id": "review-018",
+      "authorName": "Thomas Bradley",
+      "role": "CTO",
+      "company": "Atlas Mobile Retail",
+      "quote": "The React Native app needed a backend that could handle offline carts and sync cleanly. Ehsan designed the API contracts first, then built the services. Mobile order completion improved and we finally stopped patching sync bugs every week.",
+      "domain": "Mobile commerce",
+      "approved": true,
+      "sortOrder": 18
+    },
+    {
+      "id": "review-019",
+      "authorName": "Grace Osei",
+      "role": "Product Director",
+      "company": "Summit Learning Systems",
+      "quote": "Multilingual school management is harder than it looks on a slide deck. Ehsan delivered exam scoring automation and admin workflows that teachers adopted quickly. He listens to non technical users and translates that into software that fits.",
+      "domain": "EdTech",
+      "approved": true,
+      "sortOrder": 19
+    },
+    {
+      "id": "review-020",
+      "authorName": "Henrik Lindqvist",
+      "role": "E-commerce Manager",
+      "company": "Nordic Supply Co.",
+      "quote": "Headless commerce was the plan, but our team was stuck on legacy templates. Ehsan connected the storefront to new APIs, kept SEO intact, and improved Core Web Vitals across the board. Organic traffic recovered within two months.",
+      "domain": "E-commerce",
+      "approved": true,
+      "sortOrder": 20
+    },
+    {
+      "id": "review-021",
+      "authorName": "Rebecca Shaw",
+      "role": "Advisor",
+      "company": "Bridgepoint Ventures",
+      "quote": "I recommend Ehsan to portfolio companies that need a senior engineer who can own architecture and still ship UI. He writes clear specs, flags risk early, and delivers vertical slices you can demo to the board without embarrassment.",
+      "domain": "Consulting",
+      "approved": true,
+      "sortOrder": 21
+    },
+    {
+      "id": "review-022",
+      "authorName": "Chris Novak",
+      "role": "VP Product",
+      "company": "SignalDesk",
+      "quote": "Stripe, webhooks, and usage based billing were blocking our go live date. Ehsan implemented payments, idempotent webhook handling, and admin reporting in one pass. Finance finally trusted the numbers and we opened self serve signup on schedule.",
+      "domain": "SaaS",
+      "approved": true,
+      "sortOrder": 22
+    }
+  ]
+}

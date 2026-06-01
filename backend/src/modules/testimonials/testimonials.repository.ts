@@ -21,6 +21,18 @@ export class TestimonialsRepository {
     });
   }
 
+  async listApprovedPaginated(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const [items, total] = await this.repo.findAndCount({
+      where: { approved: true },
+      order: { sortOrder: 'DESC', createdAt: 'DESC' },
+      relations: { images: { media: true } },
+      skip,
+      take: limit,
+    });
+    return { items, total };
+  }
+
   listAdmin() {
     return this.repo.find({
       order: { sortOrder: 'ASC', createdAt: 'DESC' },

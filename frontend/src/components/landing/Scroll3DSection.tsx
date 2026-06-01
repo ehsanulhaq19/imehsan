@@ -10,7 +10,9 @@ type Props = {
 };
 
 /**
- * Scroll-linked 3D tilt for section content (rotateX + scale + opacity).
+ * Scroll-linked 3D tilt for section content (rotateX + scale + translateZ).
+ * Opacity is intentionally omitted — scroll-linked opacity on the content wrapper
+ * caused hover overlay flicker on nested interactive cards during mid-scroll 3D transforms.
  * Respects prefers-reduced-motion.
  */
 export function Scroll3DSection({ children, className = "", innerClassName = "" }: Props) {
@@ -28,11 +30,6 @@ export function Scroll3DSection({ children, className = "", innerClassName = "" 
     [0, 0.25, 0.5, 0.75, 1],
     reduceMotion ? [1, 1, 1, 1, 1] : [0.935, 0.98, 1, 1, 0.97],
   );
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.08, 0.12, 0.85, 1],
-    reduceMotion ? [1, 1, 1, 1, 1] : [0.55, 0.88, 1, 1, 0.8],
-  );
   const z = useTransform(scrollYProgress, [0, 0.5, 1], reduceMotion ? [0, 0, 0] : [-24, 0, -12]);
 
   return (
@@ -44,12 +41,12 @@ export function Scroll3DSection({ children, className = "", innerClassName = "" 
         style={{
           rotateX,
           scale,
-          opacity,
           translateZ: z,
           transformOrigin: "50% 8%",
           transformStyle: "preserve-3d",
+          backfaceVisibility: "hidden",
         }}
-        className={`relative will-change-transform ${innerClassName}`}
+        className={`relative [transform-style:preserve-3d] ${innerClassName}`}
       >
         {children}
       </motion.div>

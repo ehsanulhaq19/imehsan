@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { IsBoolean, IsOptional, IsString, IsUUID, MinLength, ValidateIf } from 'class-validator';
 import { AdminListQueryDto, paginatedMeta } from '../../common/dto/admin-list-query.dto';
+import { PublicListQueryDto, publicPaginatedMeta } from '../../common/dto/public-list-query.dto';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt.guard';
 import { TestimonialsRepository } from './testimonials.repository';
 
@@ -34,8 +35,11 @@ export class TestimonialsPublicController {
   constructor(private readonly repo: TestimonialsRepository) {}
 
   @Get()
-  list() {
-    return this.repo.listApproved();
+  async list(@Query() query: PublicListQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 12;
+    const { items, total } = await this.repo.listApprovedPaginated(page, limit);
+    return { items, meta: publicPaginatedMeta(total, page, limit) };
   }
 }
 

@@ -121,11 +121,11 @@ export function SlugHoverGridCard({
   return (
     <ScrollReveal delay={delay} className={className}>
       <article
-        className={`overflow-hidden rounded-xl border border-brand-outline-soft/35 bg-brand-surface-low/30 shadow-[0_22px_50px_-32px_rgb(11_28_48_/0.55)] transition-transform duration-300 hover:-translate-y-1 ${compact ? "rounded-lg" : ""}`}
+        className={`overflow-hidden rounded-xl border border-brand-outline-soft/35 bg-brand-surface-low/30 shadow-[0_22px_50px_-32px_rgb(11_28_48_/0.55)] ${compact ? "rounded-lg" : ""}`}
       >
         <div className="group block">
           <div
-            className={`relative isolate w-full overflow-hidden bg-neutral-900/10 ${compact ? "aspect-[16/11]" : "aspect-[5/5]"}`}
+            className={`relative isolate w-full overflow-hidden bg-neutral-900/10 [transform:translateZ(0)] backface-hidden ${compact ? "aspect-[16/11]" : "aspect-[5/5]"}`}
           >
             {hasMedia ? (
               <>
@@ -136,7 +136,7 @@ export function SlugHoverGridCard({
                     playsInline
                     preload="metadata"
                     poster={img}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.02]"
                   />
                 ) : (
                   <Image
@@ -144,7 +144,7 @@ export function SlugHoverGridCard({
                     alt=""
                     fill
                     priority={imagePriority}
-                    className="object-unset transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                    className="object-cover transition-[transform,opacity] duration-500 ease-out will-change-[transform,opacity] group-hover:scale-[1.02] group-hover:opacity-0"
                     sizes={compact ? "(max-width:640px) 100vw, (max-width:1024px) 33vw, 25vw" : "(max-width:640px) 100vw, 50vw"}
                     unoptimized
                   />
@@ -161,7 +161,7 @@ export function SlugHoverGridCard({
                 ) : null}
 
                 <div
-                  className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] bg-gradient-to-t from-black/82 via-black/38 to-transparent ${
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] bg-gradient-to-t from-black/82 via-black/38 to-transparent transition-opacity duration-300 ease-out group-hover:opacity-0 ${
                     compact ? "px-3 pb-3 pt-9" : "px-4 pb-4 pt-14"
                   }`}
                 >
@@ -174,7 +174,7 @@ export function SlugHoverGridCard({
                   </p>
                 </div>
 
-                <div className="pointer-events-none invisible absolute inset-0 z-10 flex translate-y-full flex-col transition-[transform,visibility] duration-300 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0">
+                <div className="pointer-events-none absolute inset-0 z-10 flex translate-y-3 flex-col opacity-0 transition-[transform,opacity] duration-300 ease-out will-change-[transform,opacity] group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
                   <OverlayWhitePanel compact={compact} href={href} title={title} blurb={blurb} />
                 </div>
               </>

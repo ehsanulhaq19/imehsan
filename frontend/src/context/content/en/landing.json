@@ -7,26 +7,84 @@
     "primaryCta": "View projects",
     "secondaryCta": "Book consultation"
   },
-  "trustStrip": {
-    "label": "Where the portfolio stays operational",
-    "lead": "From schema design to guarded LLM workloads—disciplined handoffs teams can staff against.",
-    "items": ["APIs under load", "LLM/RAG pipelines", "Headless commerce", "AWS/GCP footprints", "Exec-ready timelines"]
+  "marketingHero": {
+    "autoIntervalMs": 5600,
+    "tablistAriaLabel": "Hero highlights",
+    "portraitSrc": "/images/background/image-3.png",
+    "backgroundUrls": [
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80"
+    ],
+    "slides": [
+      {
+        "eyebrow": "Full stack development",
+        "title": "One engineer from UI to production APIs",
+        "body": "Ehsan owns the full delivery path: typed React and Next.js frontends, Node and Python services, PostgreSQL data models, and deployable releases. You get vertical slices you can demo, not handoffs that stall between teams."
+      },
+      {
+        "eyebrow": "AI engineering",
+        "title": "LLM features built with production guardrails",
+        "body": "Assistants, RAG pipelines, vector search, and tool calling are designed with grounding, fallbacks, logging, and cost control. The goal is reliable answers inside your business rules, not impressive demos that break under real usage."
+      },
+      {
+        "eyebrow": "Solution design",
+        "title": "Architecture before hero features",
+        "body": "Every engagement starts with clear boundaries: API contracts, data ownership, failure modes, and observability. That discipline keeps velocity high without sacrificing operability when traffic, scope, or compliance pressure shows up."
+      },
+      {
+        "eyebrow": "How delivery works",
+        "title": "Scoped sprints, visible progress, on-time launches",
+        "body": "Ehsan works in async friendly cycles with written specs, working demos, and CI backed releases. Stakeholders see progress weekly, risks surface early, and MVPs reach production with monitoring instead of last minute fire drills."
+      },
+      {
+        "eyebrow": "Full stack depth",
+        "title": "Backend, realtime, and integrations that hold up",
+        "body": "REST and GraphQL APIs, WebSockets, payment flows, calendar sync, and third party integrations are implemented as cohesive systems. Performance tuning, caching, and queue based processing are part of the solution, not afterthoughts."
+      },
+      {
+        "eyebrow": "AI product outcomes",
+        "title": "From prototype to governed AI workloads",
+        "body": "Document ingestion, embeddings, eval harnesses, admin tooling, and billing ready SaaS layers turn AI ideas into products teams can sell and support. Ehsan bridges research curiosity and the engineering rigor production teams expect."
+      }
+    ]
   },
-  "metrics": [
-    {
-      "valueKey": "experienceYears",
-      "label": "Years spanning web backends, typed services, realtime channels, assistants, and release discipline."
-    },
-    {
-      "valueKey": "specializationCount",
-      "label": "Anchored specialties—architecture, stacks, realtime systems, SaaS launches, assistants, observability."
-    },
-    {
-      "valueKey": "static",
-      "staticValue": "24/7",
-      "label": "Remote-ready collaboration with Lahore HQ—async specs, demos, telemetry, and production ownership."
-    }
-  ],
+  "trustStrip": {
+    "label": "Where solutions stay operational",
+    "lead": "From schema design to guarded LLM workloads, disciplined handoffs teams can staff against.",
+    "items": [
+      "Full stack delivery",
+      "LLM and RAG pipelines",
+      "Typed APIs under load",
+      "Cloud native releases",
+      "Production AI guardrails"
+    ]
+  },
+  "metricsSection": {
+    "eyebrow": "Delivery at a glance",
+    "title": "How Ehsan ships full stack and AI solutions",
+    "items": [
+      {
+        "valueKey": "experienceYears",
+        "label": "Years delivering full stack web systems and production AI features from first schema to monitored release."
+      },
+      {
+        "valueKey": "specializationCount",
+        "label": "Solution areas spanning architecture, typed services, LLM workflows, realtime systems, and cloud delivery."
+      },
+      {
+        "valueKey": "static",
+        "staticValue": "UI→AI",
+        "label": "End to end ownership across interfaces, backend services, data models, integrations, and governed model workloads."
+      }
+    ]
+  },
+  "aboutSection": {
+    "eyebrow": "About"
+  },
   "philosophy": {
     "heading": "How senior engineers deliver",
     "pillars": [
@@ -41,20 +99,13 @@
     ],
     "codePanel": {
       "className": "SeniorFullStackAI",
-      "initLine": "self.scope = \"UI, typed APIs, data plane, inference, observability\"",
-      "stackItems": [
-        "\"TypeScript\"",
-        "\"React / Next.js\"",
-        "\"Node + Python services\"",
-        "\"PostgreSQL / Prisma\"",
-        "\"queues, caches, workflows\"",
-        "\"LLMs, RAG, eval harnesses\"",
-        "\"Docker / cloud / IaC\""
-      ],
-      "methodName": "ship_vertical_slice",
-      "methodReturn": "ui.compose(api.orchestrate(model.rag_guarded(roadmap)).instrument())",
-      "instanceFocus": "\"production\"",
-      "shipArg": "\"from schemas to monitored release\""
+      "initMethod": "__init__",
+      "anchorProperty": "self.anchor",
+      "stackProperty": "self.stack",
+      "shipMethod": "ship",
+      "shipReturn": "microservices.llm.ready(scope)",
+      "instanceVar": "profile",
+      "shipScopeExample": "SaaS · commerce · comms platforms"
     }
   },
   "sections": {
@@ -112,7 +163,8 @@
       "title": "Private strategy consultation",
       "body": "Bring ambiguity. Leave with sequencing, staffing assumptions, and a pragmatic technical narrative you can share internally.",
       "primary": "Reserve a session",
-      "secondary": "Read background"
+      "secondary": "Read background",
+      "portraitSrc": "/images/background/image-4.png"
     }
   },
   "assets": {

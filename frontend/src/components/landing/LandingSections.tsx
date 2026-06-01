@@ -1,14 +1,14 @@
 "use client";
 
 import { SlugHoverGridCard } from "@/components/card";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { content } from "@/lib/content-registry";
 import { Scroll3DSection } from "./Scroll3DSection";
-import { assetUrl } from "@/api/client";
+import { TestimonialsSlider, type TestimonialSlideItem } from "./TestimonialsSlider";
+import type { PaginatedMeta } from "@/api/client";
 import cv from "@/data/cv.json";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 const { landing: L } = content;
 
@@ -22,16 +22,6 @@ type Item = {
 };
 
 type Repo = { id: string; name: string; url: string };
-
-/** Rotating marketing backdrops keyed to each headline slide — swap URLs anytime */
-const CV_HERO_BACKGROUNDS = [
-  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1920&q=80",
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80",
-] as const;
 
 const aboutContainer = {
   hidden: {},
@@ -108,7 +98,7 @@ export type LandingSectionsProps = {
   repos: Repo[];
   vlogs: Item[];
   certifications: Item[];
-  testimonials: { id: string; authorName: string; quote: string; image?: string }[];
+  testimonialsInitial?: { items: TestimonialSlideItem[]; meta: PaginatedMeta } | null;
 };
 
 function IconArrow({ className }: { className?: string }) {
@@ -145,69 +135,59 @@ function SectionShell({
   );
 }
 
-function buildCvHeroSlides() {
-  const pi = cv.personal_info;
-  const ps = cv.professional_summary;
-  const ci = cv.career_identity;
-  const sk = cv.skills;
-  const overview = ps.overview.length > 300 ? `${ps.overview.slice(0, 297).trimEnd()}…` : ps.overview;
-  return [
-    {
-      eyebrow: pi.title[0],
-      title: pi.name,
-      body: `${ci.primary_positioning} · ${pi.location}`,
-    },
-    {
-      eyebrow: "Mobile engineering",
-      title: pi.title[1],
-      body: sk.mobile.slice(0, 4).join(" · "),
-    },
-    {
-      eyebrow: "AI & intelligent products",
-      title: pi.title[2],
-      body: sk.ai_engineering.slice(0, 5).join(" · "),
-    },
-    {
-      eyebrow: "How I work",
-      title: "Designing systems that ship",
-      body: overview,
-    },
-    {
-      eyebrow: "Industry depth",
-      title: "From logistics to healthcare",
-      body: sk.business_domain_expertise.slice(0, 10).join(" · "),
-    },
-    {
-      eyebrow: "Education & validation",
-      title: cv.education.degree,
-      body: `${cv.education.institution} (${cv.education.duration})`,
-    },
-  ];
-}
-
-function HeroPreviewFrame() {
+function PortraitCard({
+  src,
+  alt,
+  variant,
+}: {
+  src: string;
+  alt: string;
+  variant: "hero" | "cta";
+}) {
+  const isHero = variant === "hero";
+  if (isHero) {
+    return (
+      /* eslint-disable-next-line @next/next/no-img-element -- transparent PNG portrait; avoids fill layout collapse in 3D section */
+      <img
+        alt={alt}
+        src={src}
+        className="block h-[min(72svh,42rem)] w-auto max-w-[min(88vw,22rem)] object-contain object-bottom object-right sm:max-w-[min(72vw,26rem)] md:h-[min(92svh,54rem)] md:max-w-[min(58vw,34rem)] lg:max-w-[min(50vw,40rem)] xl:max-w-[min(46vw,44rem)]"
+      />
+    );
+  }
   return (
-    <div className="relative mx-auto w-full max-w-[min(92vw,20rem)] overflow-hidden md:max-w-[min(320px,28vw)]">
-      <div className="pointer-events-none absolute inset-0 rounded-[1.35rem] bg-gradient-to-br from-brand-tertiary/50 via-transparent to-brand-fg/20 opacity-90 blur-xl" aria-hidden />
-      <div className="relative overflow-hidden rounded-2xl border border-brand-outline/40 bg-brand-surface-low shadow-[0_28px_80px_-38px_rgb(11_28_48_/0.75)] ring-1 ring-brand-fg/5">
-        <div className="flex aspect-[4/5] flex-col justify-between bg-gradient-to-b from-brand-muted/18 via-brand-bg/40 to-brand-surface-low px-6 py-7">
-          <span className="font-brand-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-muted">Preview</span>
-          <div>
-            <p className="font-brand-display text-fp-small font-semibold leading-snug text-brand-fg/90">Portrait placeholder</p>
-            <p className="mt-3 font-brand text-[13px] leading-relaxed text-brand-secondary">
-              Drop your headshot here — swap this wrapper for{" "}
-              <code className="rounded bg-brand-fg/[0.06] px-1.5 py-0.5 font-brand-mono text-[11px]">next/image</code> pointing at{" "}
-              <code className="rounded bg-brand-fg/[0.06] px-1.5 py-0.5 font-brand-mono text-[11px]">/public/...</code>.
-            </p>
-          </div>
-        </div>
+    <div className="relative w-full max-w-[18rem] overflow-hidden md:max-w-[280px]">
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[1.35rem] bg-gradient-to-br from-brand-bg/35 via-transparent to-brand-tertiary/25 opacity-90 blur-xl"
+        aria-hidden
+      />
+      <div className="relative w-full overflow-hidden rounded-2xl border border-brand-bg/25 bg-brand-bg/5 shadow-[0_28px_80px_-38px_rgb(11_28_48_/0.75)] ring-1 ring-brand-bg/10">
+        {/* eslint-disable-next-line @next/next/no-img-element -- local portrait; avoids fill layout collapse in 3D section */}
+        <img
+          alt={alt}
+          src={src}
+          width={640}
+          height={800}
+          className="block aspect-[4/5] h-auto w-full object-cover object-[center_18%]"
+        />
       </div>
     </div>
   );
 }
 
-function CvMarketingHero({ intervalMs = 5600 }: { intervalMs?: number }) {
-  const slides = useMemo(() => buildCvHeroSlides(), []);
+function MarketingHeroPortrait() {
+  return <PortraitCard src={L.marketingHero.portraitSrc} alt={L.hero.imageAlt} variant="hero" />;
+}
+
+function FinalCtaPortrait() {
+  return <PortraitCard src={L.sections.finalCta.portraitSrc} alt="" variant="cta" />;
+}
+
+function CvMarketingHero() {
+  const slides = L.marketingHero.slides;
+  const backgrounds = L.marketingHero.backgroundUrls;
+  const intervalMs = L.marketingHero.autoIntervalMs;
+  const tablistAriaLabel = L.marketingHero.tablistAriaLabel;
   const [index, setIndex] = useState(0);
   const reduce = useReducedMotion();
 
@@ -223,7 +203,7 @@ function CvMarketingHero({ intervalMs = 5600 }: { intervalMs?: number }) {
 
   return (
     <Scroll3DSection className="overflow-hidden pb-14 md:pb-20">
-      <div className="relative flex min-h-[min(92svh,54rem)] items-center justify-start">
+      <div className="relative flex min-h-[min(92svh,54rem)] items-end justify-start md:items-center">
         <div className="absolute inset-0 z-0">
           <AnimatePresence initial={false} mode="sync">
             <motion.div
@@ -234,57 +214,69 @@ function CvMarketingHero({ intervalMs = 5600 }: { intervalMs?: number }) {
               exit={{ opacity: 0 }}
               transition={{ duration: reduce ? 0 : 0.85, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element -- remote rotating hero */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- local + remote rotating hero backgrounds */}
               <img
                 alt=""
                 className="h-full w-full object-cover scale-105 motion-reduce:scale-100"
-                src={CV_HERO_BACKGROUNDS[reduce ? 0 : index]}
+                src={backgrounds[reduce ? 0 : index % backgrounds.length]}
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-bg via-brand-bg/82 to-transparent md:via-brand-bg/70 lg:via-brand-bg/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/88 to-brand-bg/45 md:bg-gradient-to-b md:from-brand-bg/92 md:via-brand-bg/78 md:to-brand-bg/35" />
+        </div>
+
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden items-end justify-end sm:flex">
+          <motion.div
+            className="h-full pr-page-x md:pr-page-x-md"
+            initial={false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <MarketingHeroPortrait />
+          </motion.div>
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-content px-page-x py-14 md:px-page-x-md md:py-16">
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr,minmax(260px,34%)] lg:gap-16">
-            <div className="min-h-[min(52vh,26rem)] max-w-[40rem]">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={reduce ? "static" : index}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <p className="font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.12em] text-brand-tertiary">{active.eyebrow}</p>
-                  <h1 className="font-brand-display mt-4 text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-[1.08] text-brand-fg md:mt-5">{active.title}</h1>
-                  <p className="mt-6 max-w-xl font-brand text-fp-hero-sub font-medium leading-[1.72] text-brand-secondary md:mt-7">{active.body}</p>
-                </motion.div>
-              </AnimatePresence>
-
-              {!reduce ? (
-                <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="Hero highlights">
-                  {slides.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      role="tab"
-                      aria-selected={i === index}
-                      onClick={() => setIndex(i)}
-                      className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
-                        i === index ? "w-8 bg-brand-tertiary" : "w-1.5 bg-brand-fg/25 hover:bg-brand-fg/40"
-                      }`}
-                    />
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="flex justify-center lg:justify-end">
-              <motion.div initial={false} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-                <HeroPreviewFrame />
+          <div className="min-h-[min(52vh,26rem)] max-w-[40rem] lg:max-w-[min(40rem,52%)]">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={reduce ? "static" : index}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14 }}
+                transition={{ duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p className="font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.12em] text-brand-tertiary">{active.eyebrow}</p>
+                <h1 className="font-brand-display mt-4 text-[clamp(2rem,5.4vw,3.5rem)] font-extrabold leading-[1.08] text-brand-fg md:mt-5">
+                  {active.title}
+                </h1>
+                <p className="mt-6 max-w-xl font-brand text-[clamp(1rem,1.35vw,1.125rem)] font-medium leading-[1.78] text-brand-secondary md:mt-7 md:leading-[1.82]">
+                  {active.body}
+                </p>
               </motion.div>
-            </div>
+            </AnimatePresence>
+
+            {!reduce ? (
+              <div className="mt-10 flex flex-wrap gap-2 md:mt-12" role="tablist" aria-label={tablistAriaLabel}>
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === index}
+                    onClick={() => setIndex(i)}
+                    className={`pointer-events-auto h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+                      i === index ? "w-8 bg-brand-tertiary" : "w-1.5 bg-brand-fg/25 hover:bg-brand-fg/40"
+                    }`}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="mt-10 flex justify-center sm:hidden">
+            <MarketingHeroPortrait />
           </div>
         </div>
       </div>
@@ -299,7 +291,7 @@ export function LandingSections({
   repos,
   vlogs,
   certifications,
-  testimonials,
+  testimonialsInitial,
 }: LandingSectionsProps) {
   const S = L.sections;
   const experienceYearsDisplay = cv.professional_summary.experience_years;
@@ -320,7 +312,7 @@ export function LandingSections({
             <motion.p variants={trustLine} className="text-center font-brand-mono text-fp-tag font-bold uppercase tracking-[0.26em] text-brand-tertiary">
               {L.trustStrip.label}
             </motion.p>
-            {"lead" in L.trustStrip && typeof L.trustStrip.lead === "string" ? (
+            {"lead" in L.trustStrip && L.trustStrip.lead ? (
               <motion.p variants={trustLine} className="mx-auto mt-5 max-w-3xl text-center font-brand text-[15px] font-medium leading-relaxed tracking-tight text-brand-secondary md:text-[16px]">
                 {L.trustStrip.lead}
               </motion.p>
@@ -342,14 +334,22 @@ export function LandingSections({
 
       <Scroll3DSection className="relative py-[4.75rem] md:py-[5.75rem]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_50%_at_50%_18%,color-mix(in_oklab,var(--brand-tertiary)_7%,transparent),transparent)]" aria-hidden />
+        <div className="relative mx-auto max-w-content px-page-x md:px-page-x-md">
+          <p className="text-center font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.14em] text-brand-tertiary">
+            {L.metricsSection.eyebrow}
+          </p>
+          <h2 className="font-brand-display mx-auto mt-5 max-w-4xl text-center text-fp-section font-bold leading-tight text-brand-fg md:mt-6">
+            {L.metricsSection.title}
+          </h2>
+        </div>
         <motion.div
-          className="relative mx-auto grid max-w-content gap-8 px-page-x md:grid-cols-3 md:gap-7 lg:gap-10 md:px-page-x-md"
+          className="relative mx-auto mt-10 grid max-w-content gap-8 px-page-x md:mt-14 md:grid-cols-3 md:gap-7 lg:gap-10 md:px-page-x-md"
           variants={metricsStagger}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-72px 0px" }}
         >
-          {L.metrics.map((row, i) => {
+          {L.metricsSection.items.map((row, i) => {
             const v =
               row.valueKey === "experienceYears"
                 ? experienceYearsDisplay
@@ -376,7 +376,7 @@ export function LandingSections({
         <div className="mx-auto grid max-w-content gap-16 px-page-x md:grid-cols-2 md:gap-20 md:px-page-x-md">
           <motion.div variants={aboutContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-12% 0px" }}>
             <motion.div variants={aboutItem}>
-              <p className="font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.14em] text-brand-tertiary">About</p>
+              <p className="font-brand-mono text-fp-tag font-semibold uppercase tracking-[0.14em] text-brand-tertiary">{L.aboutSection.eyebrow}</p>
               <h2 className="font-brand-display mt-5 text-fp-section font-bold leading-tight text-brand-fg md:mt-6">{cv.career_identity.primary_positioning}</h2>
               <p className="mt-6 font-brand text-fp-body leading-[1.75] text-brand-secondary">{cv.professional_summary.overview}</p>
             </motion.div>
@@ -408,30 +408,37 @@ export function LandingSections({
                 <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/55" />
                 <span className="h-2.5 w-2.5 rounded-full bg-green-500/55" />
               </div>
-              <span className="text-brand-tertiary">class</span> <span className="text-blue-700">EngineerProfile</span>:<br />
-              &nbsp;&nbsp;<span className="text-brand-tertiary">def</span> <span className="text-blue-700">__init__</span>(self):
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="text-neutral-700">
-                self.anchor = &quot;{cv.personal_info.location}&quot;
-              </span>
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="text-neutral-700">self.stack = [</span>
-              <span className="text-emerald-800">{codeStacks.join(", ")}</span>
-              <span className="text-neutral-700">]</span>
-              <br />
-              <br />
-              &nbsp;&nbsp;<span className="text-brand-tertiary">def</span> <span className="text-blue-700">ship</span>(self, scope):
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="text-brand-tertiary">return</span>
-              <span className="text-neutral-700"> microservices.llm.ready(scope)</span>
-              <br />
-              <br />
-              profile = EngineerProfile()
-              <br />
-              profile.ship(scope=&quot;<span className="text-purple-900">SaaS · commerce · comms platforms</span>&quot;)
+              {(() => {
+                const panel = L.philosophy.codePanel;
+                return (
+                  <>
+                    <span className="text-brand-tertiary">class</span> <span className="text-blue-700">{panel.className}</span>:<br />
+                    &nbsp;&nbsp;<span className="text-brand-tertiary">def</span> <span className="text-blue-700">{panel.initMethod}</span>(self):
+                    <br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span className="text-neutral-700">
+                      {panel.anchorProperty} = &quot;{cv.personal_info.location}&quot;
+                    </span>
+                    <br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span className="text-neutral-700">{panel.stackProperty} = [</span>
+                    <span className="text-emerald-800">{codeStacks.join(", ")}</span>
+                    <span className="text-neutral-700">]</span>
+                    <br />
+                    <br />
+                    &nbsp;&nbsp;<span className="text-brand-tertiary">def</span> <span className="text-blue-700">{panel.shipMethod}</span>(self, scope):
+                    <br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span className="text-brand-tertiary">return</span>
+                    <span className="text-neutral-700"> {panel.shipReturn}</span>
+                    <br />
+                    <br />
+                    {panel.instanceVar} = {panel.className}()
+                    <br />
+                    {panel.instanceVar}.{panel.shipMethod}(scope=&quot;<span className="text-purple-900">{panel.shipScopeExample}</span>&quot;)
+                  </>
+                );
+              })()}
               <div className="pointer-events-none absolute bottom-3 right-3 select-none text-7xl font-bold text-brand-fg/[0.06]">✦</div>
             </div>
           </motion.div>
@@ -603,57 +610,38 @@ export function LandingSections({
 
       <Scroll3DSection className="marketing-grid-bg pb-24 pt-14 md:pb-36 md:pt-20">
         <SectionShell eyebrow={S.testimonials.eyebrow} title={S.testimonials.title} lead={undefined}>
-          {testimonials.length === 0 ? (
-            <p className="font-brand text-brand-secondary">{S.testimonials.empty}</p>
-          ) : (
-            <div className="columns-1 gap-x-10 [column-gap:2.25rem] md:columns-2 lg:columns-3">
-              {testimonials.slice(0, 6).map((t) => {
-                const img = t.image ? assetUrl(t.image) : null;
-                return (
-                  <blockquote
-                    key={t.id}
-                    className="card-3d-tilt mb-8 break-inside-avoid rounded-2xl border border-brand-outline-soft/25 bg-brand-white/[0.93] shadow-[0_30px_70px_-42px_rgb(11_28_48_/0.52)]"
-                  >
-                    {img ? (
-                      <div className="relative aspect-[16/11] bg-brand-muted/10">
-                        <Image src={img} alt="" fill className="object-cover" sizes="360px" unoptimized />
-                      </div>
-                    ) : (
-                      <div className="h-28 bg-gradient-to-br from-brand-tertiary/15 to-brand-bg" />
-                    )}
-                    <div className="space-y-5 p-9">
-                      <p className="font-brand-accent text-fp-body font-light italic leading-relaxed text-brand-muted">&ldquo;{t.quote}&rdquo;</p>
-                      <footer className="flex items-center gap-3 border-t border-brand-outline-soft/30 pt-5 font-brand-mono text-fp-tag font-medium uppercase tracking-[0.06em] text-brand-tertiary">
-                        <span className="h-px flex-1 bg-brand-outline-soft/40" aria-hidden />
-                        {t.authorName}
-                      </footer>
-                    </div>
-                  </blockquote>
-                );
-              })}
-            </div>
-          )}
+          <TestimonialsSlider emptyMessage={S.testimonials.empty} initial={testimonialsInitial} />
         </SectionShell>
       </Scroll3DSection>
 
       <Scroll3DSection className="border-t border-brand-outline-soft/25 bg-brand-fg pb-28 pt-20 text-brand-bg md:pb-36 md:pt-28">
         <div className="mx-auto max-w-content px-page-x md:px-page-x-md">
-          <p className="font-brand text-fp-small font-semibold uppercase text-brand-bg/72">{S.finalCta.eyebrow}</p>
-          <h2 className="font-brand-display text-fp-section mt-6 max-w-3xl font-bold">{S.finalCta.title}</h2>
-          <p className="mt-8 max-w-2xl font-brand text-fp-hero-sub leading-[1.75] text-brand-bg/82">{S.finalCta.body}</p>
-          <div className="mt-14 flex flex-wrap gap-5">
-            <Link
-              href="/booking"
-              className="inline-flex items-center gap-2 bg-brand-bg px-8 py-4 font-brand text-fp-button font-semibold uppercase text-brand-fg transition-opacity hover:opacity-92"
-            >
-              {S.finalCta.primary} <IconArrow className="h-4 w-4 text-brand-fg" />
-            </Link>
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-2 border border-brand-bg/55 px-8 py-4 font-brand text-fp-button font-semibold uppercase text-brand-bg transition-colors hover:bg-brand-bg/10"
-            >
-              {S.finalCta.secondary}
-            </Link>
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr,minmax(240px,32%)] lg:gap-16">
+            <div>
+              <p className="font-brand text-fp-small font-semibold uppercase text-brand-bg/72">{S.finalCta.eyebrow}</p>
+              <h2 className="font-brand-display text-fp-section mt-6 max-w-3xl font-bold">{S.finalCta.title}</h2>
+              <p className="mt-8 max-w-2xl font-brand text-fp-hero-sub leading-[1.75] text-brand-bg/82">{S.finalCta.body}</p>
+              <div className="mt-14 flex flex-wrap gap-5">
+                <Link
+                  href="/booking"
+                  className="inline-flex items-center gap-2 bg-brand-bg px-8 py-4 font-brand text-fp-button font-semibold uppercase text-brand-fg transition-opacity hover:opacity-92"
+                >
+                  {S.finalCta.primary} <IconArrow className="h-4 w-4 text-brand-fg" />
+                </Link>
+                <Link
+                  href="/about"
+                  className="inline-flex items-center gap-2 border border-brand-bg/55 px-8 py-4 font-brand text-fp-button font-semibold uppercase text-brand-bg transition-colors hover:bg-brand-bg/10"
+                >
+                  {S.finalCta.secondary}
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex w-full min-w-0 justify-center lg:justify-end">
+              <motion.div initial={false} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                <FinalCtaPortrait />
+              </motion.div>
+            </div>
           </div>
         </div>
       </Scroll3DSection>
