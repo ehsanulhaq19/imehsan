@@ -481,14 +481,14 @@ export function VlogsAdminPage() {
     }
   }
 
-  async function attachMedia(mediaId: string, role: string) {
+  async function attachMedia(mediaId: string, role: string, refresh = true) {
     if (!token || !activeVlogId || !mediaId.trim()) return;
     const res = await adminFetch(`/admin/vlogs/${activeVlogId}/media`, token, {
       method: "POST",
       body: JSON.stringify({ mediaId: mediaId.trim(), role }),
     });
     if (!res.ok) setErr(`Attach failed (${res.status})`);
-    else {
+    else if (refresh) {
       setAttachById("");
       await load();
       await refreshEditRow(activeVlogId);
@@ -499,20 +499,28 @@ export function VlogsAdminPage() {
     e.preventDefault();
     if (!token || !activeVlogId) return;
     const fd = new FormData(e.currentTarget);
-    const file = fd.get("file");
-    if (!(file instanceof File) || !file.size) return;
+    const files = fd
+      .getAll("files")
+      .filter((entry): entry is File => entry instanceof File && entry.size > 0);
+    if (!files.length) return;
     setBusyUpload(true);
-    const up = new FormData();
-    up.append("file", file);
-    const upRes = await adminFetch("/admin/media/upload", token, { method: "POST", body: up });
-    setBusyUpload(false);
-    if (!upRes.ok) {
-      setErr(`Upload failed (${upRes.status})`);
-      return;
+    for (const file of files) {
+      const up = new FormData();
+      up.append("file", file);
+      const upRes = await adminFetch("/admin/media/upload", token, { method: "POST", body: up });
+      if (!upRes.ok) {
+        setBusyUpload(false);
+        setErr(`Upload failed (${upRes.status})`);
+        return;
+      }
+      const j = (await upRes.json()) as { id: string };
+      await attachMedia(j.id, attachRole, false);
     }
-    const j = (await upRes.json()) as { id: string };
+    setBusyUpload(false);
     e.currentTarget.reset();
-    await attachMedia(j.id, attachRole);
+    setAttachById("");
+    await load();
+    await refreshEditRow(activeVlogId);
   }
 
   async function detachPivot(pivotId: string) {
@@ -785,11 +793,11 @@ export function VlogsAdminPage() {
               </label>
               <form onSubmit={uploadAndAttach} className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--card-border)] p-3 dark:border-neutral-700/70">
                 <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider">
-                  Upload file
-                  <input name="file" type="file" className="font-brand mt-1 block w-full text-fp-small" />
+                  Upload file(s)
+                  <input name="files" type="file" multiple className="font-brand mt-1 block w-full text-fp-small" />
                 </label>
                 <button type="submit" className="hcode-btn px-3 py-2.5 font-brand text-fp-caption" disabled={busyUpload}>
-                  {busyUpload ? "…" : "Upload & attach"}
+                  {busyUpload ? "…" : "Upload & attach all"}
                 </button>
               </form>
               <div className="flex flex-wrap items-end gap-2">
