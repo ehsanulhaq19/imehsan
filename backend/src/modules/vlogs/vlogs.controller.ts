@@ -67,6 +67,29 @@ class VlogAttachDto {
   @IsString()
   @MaxLength(32)
   role: string;
+  @IsOptional()
+  @IsInt()
+  order?: number;
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  type?: string;
+  @IsOptional()
+  @IsBoolean()
+  isPublicView?: boolean;
+}
+
+class VlogMediaUpdateDto {
+  @IsOptional()
+  @IsInt()
+  order?: number;
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  type?: string;
+  @IsOptional()
+  @IsBoolean()
+  isPublicView?: boolean;
 }
 
 @Controller('vlogs')
@@ -162,6 +185,15 @@ export class VlogsAdminController {
     return this.svc.update(id, dto);
   }
 
+  @Patch(':id/media/:pivotId')
+  updateMedia(
+    @Param('id') id: string,
+    @Param('pivotId') pivotId: string,
+    @Body() dto: VlogMediaUpdateDto,
+  ) {
+    return this.svc.updateMedia(id, pivotId, dto);
+  }
+
   @Delete(':id/media/:pivotId')
   detachMedia(@Param('id') id: string, @Param('pivotId') pivotId: string) {
     return this.svc.detachMedia(id, pivotId);
@@ -174,6 +206,13 @@ export class VlogsAdminController {
 
   @Post(':id/media')
   attach(@Param('id') id: string, @Body() dto: VlogAttachDto) {
-    return this.svc.attach(id, dto.mediaId, dto.role);
+    return this.svc.attach(
+      id,
+      dto.mediaId,
+      dto.role,
+      dto.order,
+      dto.type,
+      dto.isPublicView,
+    );
   }
 }

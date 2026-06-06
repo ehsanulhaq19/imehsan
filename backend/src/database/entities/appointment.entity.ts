@@ -29,6 +29,9 @@ export class Appointment {
   @Column({ name: 'appointment_time', type: 'time' })
   appointmentTime: string;
 
+  @Column({ type: 'varchar', length: 64, default: 'UTC' })
+  timezone: string;
+
   @Column({ name: 'contact_name', type: 'varchar' })
   contactName: string;
 

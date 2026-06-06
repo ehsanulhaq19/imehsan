@@ -5,7 +5,13 @@ export type VlogListRow = {
   slug: string;
   heading: string;
   description?: string | null;
-  mediaItems?: { role: string; media: { path: string; mimeType: string } }[];
+  mediaItems?: {
+    role: string;
+    order?: number;
+    type?: string;
+    isPublicView?: boolean;
+    media: { path: string; mimeType: string };
+  }[];
 };
 
 const defaultListLimit = 12;

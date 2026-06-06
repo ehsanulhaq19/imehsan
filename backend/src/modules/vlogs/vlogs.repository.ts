@@ -26,7 +26,7 @@ export class VlogsRepository {
     const total = await this.vlogs.count({ where });
     const items = await this.vlogs.find({
       where,
-      order: { sortOrder: 'DESC', createdAt: 'DESC' },
+      order: { sortOrder: 'DESC', createdAt: 'DESC', mediaItems: { order: 'ASC' } },
       relations: { mediaItems: { media: true } },
       skip,
       take: limit,
@@ -37,6 +37,7 @@ export class VlogsRepository {
   findPublished(slug: string) {
     return this.vlogs.findOne({
       where: { slug, published: true },
+      order: { mediaItems: { order: 'ASC' } },
       relations: {
         mediaItems: { media: true },
         comments: true,
@@ -46,7 +47,7 @@ export class VlogsRepository {
 
   listAdmin() {
     return this.vlogs.find({
-      order: { sortOrder: 'ASC', createdAt: 'DESC' },
+      order: { sortOrder: 'ASC', createdAt: 'DESC', mediaItems: { order: 'ASC' } },
       relations: { mediaItems: { media: true } },
     });
   }
@@ -59,6 +60,7 @@ export class VlogsRepository {
       .leftJoinAndSelect('mi.media', 'm')
       .orderBy('v.sortOrder', 'ASC')
       .addOrderBy('v.createdAt', 'DESC')
+      .addOrderBy('mi.order', 'ASC')
       .skip(skip)
       .take(limit);
     if (q?.trim()) {
@@ -268,6 +270,7 @@ export class VlogsRepository {
     await this.vlogs.update({ id }, data as never);
     const row = await this.vlogs.findOne({
       where: { id },
+      order: { mediaItems: { order: 'ASC' } },
       relations: { mediaItems: { media: true } },
     });
     if (!row) throw new NotFoundException();
@@ -278,8 +281,33 @@ export class VlogsRepository {
     await this.vlogs.delete({ id });
   }
 
-  attach(vlogId: string, mediaId: string, role: string) {
-    return this.vm.save(this.vm.create({ vlogId, mediaId, role }));
+  attach(
+    vlogId: string,
+    mediaId: string,
+    role: string,
+    order = 0,
+    type = 'default',
+    isPublicView = true,
+  ) {
+    return this.vm.save(
+      this.vm.create({ vlogId, mediaId, role, order, type, isPublicView }),
+    );
+  }
+
+  async updateMedia(
+    vlogId: string,
+    pivotId: string,
+    data: Partial<Pick<VlogMedia, 'order' | 'type' | 'isPublicView'>>,
+  ) {
+    const row = await this.vm.findOne({
+      where: { id: pivotId, vlogId },
+      relations: { media: true },
+    });
+    if (!row) throw new NotFoundException();
+    if (data.order !== undefined) row.order = data.order;
+    if (data.type !== undefined) row.type = data.type;
+    if (data.isPublicView !== undefined) row.isPublicView = data.isPublicView;
+    return this.vm.save(row);
   }
 
   async detachMedia(vlogId: string, pivotId: string) {

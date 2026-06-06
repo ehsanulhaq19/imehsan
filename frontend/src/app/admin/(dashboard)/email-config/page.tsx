@@ -23,7 +23,7 @@ export default function AdminEmailConfigPage() {
         },
         { name: "host", label: "Host", type: "text" },
         { name: "port", label: "Port", type: "number" },
-        { name: "secure", label: "Secure TLS", type: "checkbox" },
+        { name: "secure", label: "Secure TLS (legacy; port 465 uses TLS automatically)", type: "checkbox" },
         { name: "username", label: "Username", type: "text" },
         { name: "password", label: "Password", type: "password" },
         { name: "fromAddress", label: "From address", type: "email" },

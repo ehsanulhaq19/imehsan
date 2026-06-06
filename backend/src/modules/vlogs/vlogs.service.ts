@@ -114,8 +114,23 @@ export class VlogsService {
     return this.repo.delete(id);
   }
 
-  attach(id: string, mediaId: string, role: string) {
-    return this.repo.attach(id, mediaId, role);
+  attach(
+    id: string,
+    mediaId: string,
+    role: string,
+    order?: number,
+    type?: string,
+    isPublicView?: boolean,
+  ) {
+    return this.repo.attach(id, mediaId, role, order, type, isPublicView);
+  }
+
+  updateMedia(
+    vlogId: string,
+    pivotId: string,
+    data: { order?: number; type?: string; isPublicView?: boolean },
+  ) {
+    return this.repo.updateMedia(vlogId, pivotId, data);
   }
 
   detachMedia(vlogId: string, pivotId: string) {

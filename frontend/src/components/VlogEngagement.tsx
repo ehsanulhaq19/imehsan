@@ -8,6 +8,9 @@ import { ScrollReveal } from "@/components/content/ScrollReveal";
 
 export type VlogMediaItem = {
   role: string;
+  order?: number;
+  type?: string;
+  isPublicView?: boolean;
   media: {
     path: string;
     mimeType: string;
@@ -46,24 +49,14 @@ function stableDateTime(value: string) {
   return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
 }
 
-function pickPrimaryMedia(items: VlogMediaItem[]) {
-  const byRole = (role: string) => items.find((m) => m.role === role);
-  return (
-    byRole("video") ??
-    items.find((m) => m.media.mimeType.startsWith("video/")) ??
-    byRole("thumbnail") ??
-    byRole("poster") ??
-    items.find((m) => m.media.mimeType.startsWith("image/")) ??
-    items[0]
-  );
+function visibleEngagementMedia(items: VlogMediaItem[]) {
+  return [...items]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .filter((m) => m.isPublicView !== false && m.type !== "thumbnail");
 }
 
-function VlogMediaPlayer({ items }: { items: VlogMediaItem[] }) {
-  const primary = pickPrimaryMedia(items);
-  const poster = items.find((m) => m.role === "thumbnail" || m.role === "poster");
-  const posterSrc = poster?.media.path ? assetUrl(poster.media.path) : undefined;
-
-  if (!primary?.media.path) {
+function VlogMediaBlock({ item, posterSrc }: { item: VlogMediaItem; posterSrc?: string }) {
+  if (!item.media.path) {
     return (
       <p className="flex min-h-[220px] items-center justify-center bg-brand-bg p-10 text-center font-brand text-[14px] text-brand-secondary">
         No media attached yet.
@@ -71,12 +64,12 @@ function VlogMediaPlayer({ items }: { items: VlogMediaItem[] }) {
     );
   }
 
-  const src = assetUrl(primary.media.path);
-  const dims = mediaDimensions(primary.media.metadata);
+  const src = assetUrl(item.media.path);
+  const dims = mediaDimensions(item.media.metadata);
   const aspectStyle = dims ? { aspectRatio: `${dims.width} / ${dims.height}` } : undefined;
-  const isVideo = primary.media.mimeType.startsWith("video/");
-  const isImage = primary.media.mimeType.startsWith("image/");
-  const isAudio = primary.media.mimeType.startsWith("audio/");
+  const isVideo = item.media.mimeType.startsWith("video/");
+  const isImage = item.media.mimeType.startsWith("image/");
+  const isAudio = item.media.mimeType.startsWith("audio/");
 
   if (isVideo) {
     return (
@@ -121,6 +114,28 @@ function VlogMediaPlayer({ items }: { items: VlogMediaItem[] }) {
       <a href={src} target="_blank" rel="noreferrer" className="brand-link font-brand text-[14px]">
         Open media file
       </a>
+    </div>
+  );
+}
+
+function VlogMediaGallery({ items }: { items: VlogMediaItem[] }) {
+  const visible = visibleEngagementMedia(items);
+  const poster = items.find((m) => m.type === "thumbnail" || m.role === "thumbnail" || m.role === "poster");
+  const posterSrc = poster?.media.path ? assetUrl(poster.media.path) : undefined;
+
+  if (!visible.length) {
+    return (
+      <p className="flex min-h-[220px] items-center justify-center bg-brand-bg p-10 text-center font-brand text-[14px] text-brand-secondary">
+        No media attached yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="divide-y divide-brand-outline-soft/30">
+      {visible.map((item, i) => (
+        <VlogMediaBlock key={`${item.media.path}-${i}`} item={item} posterSrc={posterSrc} />
+      ))}
     </div>
   );
 }
@@ -252,7 +267,7 @@ export function VlogEngagement({
     <div className="mt-10 space-y-10">
       <ScrollReveal>
         <div className="overflow-hidden rounded-[1.85rem] border border-brand-outline-soft/30 bg-brand-fg/[0.04] shadow-[0_42px_90px_-40px_rgb(11_28_48_/0.82)] ring-8 ring-brand-bg/55">
-          <VlogMediaPlayer items={mediaItems} />
+          <VlogMediaGallery items={mediaItems} />
         </div>
       </ScrollReveal>
 

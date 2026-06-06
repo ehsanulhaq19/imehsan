@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Injectable,
   Logger,
+  NotFoundException,
+  StreamableFile,
 } from '@nestjs/common';
+import { createReadStream, existsSync } from 'fs';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { v4 as uuid } from 'uuid';
@@ -62,6 +65,7 @@ export class AppointmentsService {
   async book(payload: {
     appointmentDate: string;
     appointmentTime: string;
+    timezone?: string;
     contactName: string;
     contactEmail: string;
     contactPhone?: string;
@@ -80,10 +84,12 @@ export class AppointmentsService {
       });
       bookerUserId = booker.id;
     }
+    const timezone = payload.timezone?.trim() || 'UTC';
     const appt = await this.repo.create({
       bookerUserId,
       appointmentDate: payload.appointmentDate,
       appointmentTime: payload.appointmentTime,
+      timezone,
       contactName: payload.contactName,
       contactEmail: payload.contactEmail,
       contactPhone: payload.contactPhone ?? null,
@@ -102,25 +108,73 @@ export class AppointmentsService {
         await this.repo.attach(appt.id, m.id);
       }
     }
-    const summary = `New booking from ${payload.contactName} (${payload.contactEmail}) on ${payload.appointmentDate} ${payload.appointmentTime}. Reason: ${payload.reason ?? '—'}`;
+    const when = `${payload.appointmentDate} ${payload.appointmentTime} (${timezone})`;
+    const bookerText = [
+      `Hi ${payload.contactName},`,
+      '',
+      'Your consultation request was received.',
+      '',
+      `Date & time: ${when}`,
+      `Phone: ${payload.contactPhone?.trim() || '—'}`,
+      `Reason: ${payload.reason?.trim() || '—'}`,
+      '',
+      'We will follow up by email.',
+    ].join('\n');
+    const hostText = [
+      'New appointment booking',
+      '',
+      `Contact: ${payload.contactName}`,
+      `Email: ${payload.contactEmail}`,
+      `Phone: ${payload.contactPhone?.trim() || '—'}`,
+      `Date & time: ${when}`,
+      `Reason: ${payload.reason?.trim() || '—'}`,
+      `Status: pending`,
+    ].join('\n');
     try {
       await this.mail.sendMail({
         to: payload.contactEmail,
         subject: 'Appointment received',
-        text: `Thanks — we received your request.\n\n${summary}`,
+        text: bookerText,
       });
-      const owners = await this.users.systemUsers();
-      for (const o of owners) {
+    } catch (e) {
+      this.logger.error('Booker mail send failed', e as Error);
+    }
+    try {
+      const hostEmail = await this.mail.activeFromAddress();
+      if (hostEmail) {
         await this.mail.sendMail({
-          to: o.email,
+          to: hostEmail,
           subject: 'New appointment booking',
-          text: summary,
+          text: hostText,
         });
+      } else {
+        this.logger.warn('No active email fromAddress; skipping host notification');
       }
     } catch (e) {
-      this.logger.error('Mail send failed', e as Error);
+      this.logger.error('Host mail send failed', e as Error);
     }
     return { id: appt.id, status: appt.status };
+  }
+
+  async findById(id: string) {
+    const row = await this.repo.findById(id);
+    if (!row) throw new NotFoundException();
+    return row;
+  }
+
+  async downloadAttachment(appointmentId: string, mediaId: string) {
+    const pivot = await this.repo.findAttachment(appointmentId, mediaId);
+    if (!pivot?.media) throw new NotFoundException();
+    const rel = pivot.media.path.replace(/^\/uploads\//, '');
+    const uploadDir = process.env.UPLOAD_DIR || join(process.cwd(), 'uploads');
+    const diskPath = join(uploadDir, rel);
+    if (!existsSync(diskPath)) throw new NotFoundException('File not found');
+    const name = pivot.media.originalName || rel;
+    const safeName = name.replace(/["\r\n]/g, '_');
+    return new StreamableFile(createReadStream(diskPath), {
+      type: pivot.media.mimeType,
+      disposition: `attachment; filename="${safeName}"`,
+    });
   }
 
   listAdminPaginated(page: number, limit: number, q?: string) {

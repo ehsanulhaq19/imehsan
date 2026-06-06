@@ -55,6 +55,20 @@ export class AppointmentsRepository {
     return qb.getManyAndCount();
   }
 
+  findById(id: string) {
+    return this.repo.findOne({
+      where: { id },
+      relations: { attachments: { media: true }, bookerUser: true },
+    });
+  }
+
+  findAttachment(appointmentId: string, mediaId: string) {
+    return this.pivot.findOne({
+      where: { appointmentId, mediaId },
+      relations: { media: true },
+    });
+  }
+
   async updateOne(id: string, data: Partial<Appointment>) {
     const exists = await this.repo.exist({ where: { id } });
     if (!exists) throw new NotFoundException();

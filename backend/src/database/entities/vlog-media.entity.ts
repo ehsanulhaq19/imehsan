@@ -29,4 +29,13 @@ export class VlogMedia {
 
   @Column({ type: 'varchar', length: 32 })
   role: string;
+
+  @Column({ name: 'sort_order', type: 'int', default: 0 })
+  order: number;
+
+  @Column({ type: 'varchar', length: 32, default: 'default' })
+  type: string;
+
+  @Column({ name: 'is_public_view', type: 'boolean', default: true })
+  isPublicView: boolean;
 }

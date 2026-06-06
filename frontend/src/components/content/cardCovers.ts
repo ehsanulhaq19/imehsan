@@ -29,14 +29,21 @@ export function coverForCertification(c: CertificationListRow): string | undefin
 }
 
 export function coverForVlog(v: {
-  mediaItems?: { role: string; media: { path: string; mimeType: string } }[];
+  mediaItems?: {
+    role: string;
+    order?: number;
+    type?: string;
+    isPublicView?: boolean;
+    media: { path: string; mimeType: string };
+  }[];
 }): { image?: string; video?: string } {
-  const video = v.mediaItems?.find((m) => m.role === "video");
-  const thumb = v.mediaItems?.find((m) => m.role === "thumbnail");
-  const img = v.mediaItems?.find((m) => m.media.mimeType.startsWith("image"));
+  const items = [...(v.mediaItems ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const thumb = items.find((m) => m.type === "thumbnail");
+  const firstPublic = items.find((m) => m.isPublicView !== false);
+  const video = items.find((m) => m.role === "video" || m.media.mimeType.startsWith("video/"));
   return {
     video: video?.media.path,
-    image: thumb?.media.path ?? img?.media.path,
+    image: thumb?.media.path ?? firstPublic?.media.path,
   };
 }
 

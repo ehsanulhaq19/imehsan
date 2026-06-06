@@ -14,7 +14,13 @@ type Detail = {
   fileUrl: string;
   voteSummary?: { likes: number; dislikes: number };
   comments?: { id: string; authorName?: string | null; body: string; createdAt: string }[];
-  mediaItems?: { role: string; media: { path: string; mimeType: string; metadata?: Record<string, unknown> } }[];
+  mediaItems?: {
+    role: string;
+    order?: number;
+    type?: string;
+    isPublicView?: boolean;
+    media: { path: string; mimeType: string; metadata?: Record<string, unknown> };
+  }[];
 };
 
 export default async function VlogDetail({ params }: { params: { slug: string } }) {

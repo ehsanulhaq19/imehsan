@@ -19,6 +19,9 @@ type MediaRef = {
 type VlogMediaPivot = {
   id: string;
   role: string;
+  order?: number;
+  type?: string;
+  isPublicView?: boolean;
   mediaId: string;
   media?: MediaRef | null;
 };
@@ -59,6 +62,11 @@ const MEDIA_ROLES = [
   { value: "thumbnail", label: "thumbnail" },
   { value: "poster", label: "poster" },
   { value: "attachment", label: "attachment" },
+];
+
+const MEDIA_TYPES = [
+  { value: "default", label: "default" },
+  { value: "thumbnail", label: "thumbnail" },
 ];
 
 type EngagementTab = "comments" | "reactions";
@@ -377,8 +385,15 @@ export function VlogsAdminPage() {
   const [sortOrder, setSortOrder] = useState("");
   const [published, setPublished] = useState(false);
   const [attachRole, setAttachRole] = useState("video");
+  const [attachOrder, setAttachOrder] = useState("0");
+  const [attachType, setAttachType] = useState("default");
+  const [attachIsPublicView, setAttachIsPublicView] = useState(true);
   const [attachById, setAttachById] = useState("");
   const [busyUpload, setBusyUpload] = useState(false);
+  const [editingPivot, setEditingPivot] = useState<VlogMediaPivot | null>(null);
+  const [pivotDraftOrder, setPivotDraftOrder] = useState("0");
+  const [pivotDraftType, setPivotDraftType] = useState("default");
+  const [pivotDraftIsPublicView, setPivotDraftIsPublicView] = useState(true);
   const slugSyncedFromHeadingRef = useRef(true);
 
   const activeVlogId = editRow?.id ?? null;
@@ -425,7 +440,11 @@ export function VlogsAdminPage() {
     setSortOrder("");
     setPublished(false);
     setAttachRole("video");
+    setAttachOrder("0");
+    setAttachType("default");
+    setAttachIsPublicView(true);
     setAttachById("");
+    setEditingPivot(null);
     setEditRow(null);
     setModal("create");
   }
@@ -439,7 +458,11 @@ export function VlogsAdminPage() {
     setSortOrder(row.sortOrder != null ? String(row.sortOrder) : "");
     setPublished(Boolean(row.published));
     setAttachRole("video");
+    setAttachOrder("0");
+    setAttachType("default");
+    setAttachIsPublicView(true);
     setAttachById("");
+    setEditingPivot(null);
     setModal("edit");
   }
 
@@ -481,11 +504,18 @@ export function VlogsAdminPage() {
     }
   }
 
-  async function attachMedia(mediaId: string, role: string, refresh = true) {
+  async function attachMedia(
+    mediaId: string,
+    role: string,
+    order: number,
+    type: string,
+    isPublicView: boolean,
+    refresh = true,
+  ) {
     if (!token || !activeVlogId || !mediaId.trim()) return;
     const res = await adminFetch(`/admin/vlogs/${activeVlogId}/media`, token, {
       method: "POST",
-      body: JSON.stringify({ mediaId: mediaId.trim(), role }),
+      body: JSON.stringify({ mediaId: mediaId.trim(), role, order, type, isPublicView }),
     });
     if (!res.ok) setErr(`Attach failed (${res.status})`);
     else if (refresh) {
@@ -514,13 +544,31 @@ export function VlogsAdminPage() {
         return;
       }
       const j = (await upRes.json()) as { id: string };
-      await attachMedia(j.id, attachRole, false);
+      await attachMedia(j.id, attachRole, Number(attachOrder) || 0, attachType, attachIsPublicView, false);
     }
     setBusyUpload(false);
     e.currentTarget.reset();
     setAttachById("");
     await load();
     await refreshEditRow(activeVlogId);
+  }
+
+  async function updatePivot(pivot: VlogMediaPivot) {
+    if (!token || !activeVlogId) return;
+    const res = await adminFetch(`/admin/vlogs/${activeVlogId}/media/${pivot.id}`, token, {
+      method: "PATCH",
+      body: JSON.stringify({
+        order: Number(pivotDraftOrder) || 0,
+        type: pivotDraftType,
+        isPublicView: pivotDraftIsPublicView,
+      }),
+    });
+    if (!res.ok) setErr(`Media update failed (${res.status})`);
+    else {
+      setEditingPivot(null);
+      await load();
+      await refreshEditRow(activeVlogId);
+    }
   }
 
   async function detachPivot(pivotId: string) {
@@ -546,7 +594,7 @@ export function VlogsAdminPage() {
     }
   }
 
-  const pivots = editRow?.mediaItems ?? [];
+  const pivots = [...(editRow?.mediaItems ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   if (!token) {
     return (
@@ -752,45 +800,147 @@ export function VlogsAdminPage() {
               {pivots.length === 0 ? (
                 <li className="text-hcode-muted">No media attached.</li>
               ) : (
-                pivots.map((p) => (
-                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 border border-[var(--card-border)] px-2 py-2 dark:border-neutral-700/70">
-                    <div className="min-w-0 flex-1">
-                      <span className="font-semibold uppercase text-hcode-violet">{p.role}</span>
-                      <span className="text-hcode-muted"> · {p.mediaId.slice(0, 8)}…</span>
+                pivots.map((p) =>
+                  editingPivot?.id === p.id ? (
+                    <li key={p.id} className="rounded-lg border border-brand-outline-soft/50 p-3 dark:border-neutral-700/70">
+                      <p className="font-brand text-fp-caption font-semibold uppercase text-hcode-violet">{p.role}</p>
                       {p.media?.path ? (
-                        <div className="font-brand mt-1 truncate text-fp-caption">
-                          <a href={assetUrl(p.media.path)} target="_blank" rel="noreferrer" className="hcode-link">
-                            {p.media.originalName || p.media.path}
-                          </a>
-                          <span className="text-hcode-muted"> ({p.media.mimeType})</span>
-                        </div>
+                        <p className="font-brand mt-1 truncate text-fp-caption text-hcode-muted">
+                          {p.media.originalName || p.media.path}
+                        </p>
                       ) : null}
-                      {p.media?.mimeType?.startsWith("image/") && p.media?.path ? (
-                        <>
-                          {/* eslint-disable-next-line @next/next/no-img-element -- admin thumb preview */}
-                          <img src={assetUrl(p.media.path)} alt="" className="mt-2 h-16 max-w-[120px] border border-[var(--card-border)] object-cover dark:border-neutral-700/70" />
-                        </>
-                      ) : null}
-                    </div>
-                    <button type="button" className="font-brand text-fp-caption uppercase text-red-600 dark:text-red-400" onClick={() => void detachPivot(p.id)}>
-                      Remove
-                    </button>
-                  </li>
-                ))
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                          Order
+                          <input
+                            type="number"
+                            className="mt-1 hcode-input normal-case tracking-normal"
+                            value={pivotDraftOrder}
+                            onChange={(e) => setPivotDraftOrder(e.target.value)}
+                          />
+                        </label>
+                        <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                          Type
+                          <select
+                            className="mt-1 hcode-input normal-case"
+                            value={pivotDraftType}
+                            onChange={(e) => setPivotDraftType(e.target.value)}
+                          >
+                            {MEDIA_TYPES.map((t) => (
+                              <option key={t.value} value={t.value}>
+                                {t.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="font-brand flex items-end gap-2 pb-2.5 text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                          <input
+                            type="checkbox"
+                            checked={pivotDraftIsPublicView}
+                            onChange={(e) => setPivotDraftIsPublicView(e.target.checked)}
+                            className="h-4 w-4"
+                          />
+                          Public view
+                        </label>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button type="button" className="hcode-btn px-3 py-2 font-brand text-fp-caption" onClick={() => void updatePivot(p)}>
+                          Save
+                        </button>
+                        <button type="button" className="hcode-btn-outline px-3 py-2 font-brand text-fp-caption" onClick={() => setEditingPivot(null)}>
+                          Cancel
+                        </button>
+                      </div>
+                    </li>
+                  ) : (
+                    <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 border border-[var(--card-border)] px-2 py-2 dark:border-neutral-700/70">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold uppercase text-hcode-violet">{p.role}</span>
+                        <span className="text-hcode-muted">
+                          {" "}
+                          · order {p.order ?? 0} · {p.type ?? "default"} ·{" "}
+                          {p.isPublicView === false ? "hidden" : "public"}
+                        </span>
+                        <span className="text-hcode-muted"> · {p.mediaId.slice(0, 8)}…</span>
+                        {p.media?.path ? (
+                          <div className="font-brand mt-1 truncate text-fp-caption">
+                            <a href={assetUrl(p.media.path)} target="_blank" rel="noreferrer" className="hcode-link">
+                              {p.media.originalName || p.media.path}
+                            </a>
+                            <span className="text-hcode-muted"> ({p.media.mimeType})</span>
+                          </div>
+                        ) : null}
+                        {p.media?.mimeType?.startsWith("image/") && p.media?.path ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element -- admin thumb preview */}
+                            <img src={assetUrl(p.media.path)} alt="" className="mt-2 h-16 max-w-[120px] border border-[var(--card-border)] object-cover dark:border-neutral-700/70" />
+                          </>
+                        ) : null}
+                      </div>
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          type="button"
+                          className="font-brand text-fp-caption font-semibold uppercase text-hcode-violet"
+                          onClick={() => {
+                            setEditingPivot(p);
+                            setPivotDraftOrder(String(p.order ?? 0));
+                            setPivotDraftType(p.type ?? "default");
+                            setPivotDraftIsPublicView(p.isPublicView !== false);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button type="button" className="font-brand text-fp-caption uppercase text-red-600 dark:text-red-400" onClick={() => void detachPivot(p.id)}>
+                          Remove
+                        </button>
+                      </div>
+                    </li>
+                  ),
+                )
               )}
             </ul>
 
             <div className="mt-4 space-y-2">
-              <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
-                Role for new upload / attach
-                <select className="mt-1 hcode-input normal-case" value={attachRole} onChange={(e) => setAttachRole(e.target.value)}>
-                  {MEDIA_ROLES.map((r) => (
-                    <option key={r.value} value={r.value}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                  Role for new upload / attach
+                  <select className="mt-1 hcode-input normal-case" value={attachRole} onChange={(e) => setAttachRole(e.target.value)}>
+                    {MEDIA_ROLES.map((r) => (
+                      <option key={r.value} value={r.value}>
+                        {r.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                  Type
+                  <select className="mt-1 hcode-input normal-case" value={attachType} onChange={(e) => setAttachType(e.target.value)}>
+                    {MEDIA_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                  Order
+                  <input
+                    type="number"
+                    className="mt-1 hcode-input normal-case tracking-normal"
+                    value={attachOrder}
+                    onChange={(e) => setAttachOrder(e.target.value)}
+                  />
+                </label>
+                <label className="font-brand flex items-end gap-2 pb-2.5 text-fp-caption font-semibold uppercase tracking-wider text-brand-fg dark:text-neutral-200">
+                  <input
+                    type="checkbox"
+                    checked={attachIsPublicView}
+                    onChange={(e) => setAttachIsPublicView(e.target.checked)}
+                    className="h-4 w-4"
+                  />
+                  Public view
+                </label>
+              </div>
               <form onSubmit={uploadAndAttach} className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--card-border)] p-3 dark:border-neutral-700/70">
                 <label className="font-brand block text-fp-caption font-semibold uppercase tracking-wider">
                   Upload file(s)
@@ -805,7 +955,19 @@ export function VlogsAdminPage() {
                   Media ID (UUID)
                   <input className="hcode-input normal-case tracking-normal" value={attachById} onChange={(e) => setAttachById(e.target.value)} placeholder="paste UUID" />
                 </label>
-                <button type="button" className="hcode-btn-outline px-3 py-2.5 font-brand text-fp-caption" onClick={() => void attachMedia(attachById, attachRole)}>
+                <button
+                  type="button"
+                  className="hcode-btn-outline px-3 py-2.5 font-brand text-fp-caption"
+                  onClick={() =>
+                    void attachMedia(
+                      attachById,
+                      attachRole,
+                      Number(attachOrder) || 0,
+                      attachType,
+                      attachIsPublicView,
+                    )
+                  }
+                >
                   Attach
                 </button>
               </div>

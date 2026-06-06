@@ -16,10 +16,36 @@ export class MailService {
     private readonly repo: Repository<EmailConfig>,
   ) {}
 
+  private smtpTransportOptions(cfg: EmailConfig) {
+    const port = cfg.port ?? 587;
+    const secure = port === 465;
+    return {
+      host: cfg.host!,
+      port,
+      secure,
+      requireTLS: port === 587,
+      auth:
+        cfg.username && cfg.password
+          ? { user: cfg.username, pass: cfg.password }
+          : undefined,
+      tls: {
+        minVersion: 'TLSv1.2' as const,
+      },
+    };
+  }
+
+  async activeFromAddress() {
+    const cfg = await this.repo.findOne({
+      where: { isActive: true },
+      order: { createdAt: 'ASC' },
+    });
+    return cfg?.fromAddress?.trim() || null;
+  }
+
   async sendMail(opts: { to: string; subject: string; text: string }) {
     const cfg = await this.repo.findOne({
       where: { isActive: true },
-      order: { updatedAt: 'DESC' },
+      order: { createdAt: 'ASC' },
     });
     if (!cfg || cfg.providerType !== EmailProviderType.SMTP) {
       this.logger.warn('No active SMTP config; skipping email send');
@@ -29,21 +55,23 @@ export class MailService {
       this.logger.warn('Incomplete SMTP config');
       return { skipped: true };
     }
-    const transporter = nodemailer.createTransport({
-      host: cfg.host,
-      port: cfg.port ?? 587,
-      secure: cfg.secure,
-      auth:
-        cfg.username && cfg.password
-          ? { user: cfg.username, pass: cfg.password }
-          : undefined,
-    });
-    await transporter.sendMail({
-      from: cfg.fromAddress,
-      to: opts.to,
-      subject: opts.subject,
-      text: opts.text,
-    });
-    return { skipped: false };
+    const port = cfg.port ?? 587;
+    const transportOpts = this.smtpTransportOptions(cfg);
+    try {
+      const transporter = nodemailer.createTransport(transportOpts);
+      await transporter.sendMail({
+        from: cfg.fromAddress,
+        to: opts.to,
+        subject: opts.subject,
+        text: opts.text,
+      });
+      return { skipped: false };
+    } catch (e) {
+      this.logger.error(
+        `SMTP send failed (${cfg.host}:${port}, secure=${transportOpts.secure}, requireTLS=${transportOpts.requireTLS})`,
+        e as Error,
+      );
+      throw e;
+    }
   }
 }

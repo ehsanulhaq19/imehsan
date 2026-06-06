@@ -36,6 +36,24 @@
     { "label": "04:30 PM to 05:30 PM", "value": "16:30" },
     { "label": "06:00 PM to 07:00 PM", "value": "18:00" }
   ],
+  "timezoneNote": "Times shown in your local timezone ({tz}).",
+  "navigation": {
+    "continue": "Continue",
+    "back": "Back",
+    "confirm": "Confirm session"
+  },
+  "preview": {
+    "heading": "Review your booking",
+    "date": "Date",
+    "time": "Time",
+    "timezone": "Timezone",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "reason": "Reason",
+    "attachments": "Attachments",
+    "none": "—"
+  },
   "form": {
     "reasonLabel": "Reason for consultation",
     "reasonPlaceholder": "Describe objectives, current stack, constraints, and what success looks like.",
@@ -48,13 +66,15 @@
     "phonePlaceholder": "+1 ...",
     "attachmentsLabel": "Attachments",
     "attachmentsOptional": "(optional)",
-    "attachmentsHint": "PDF, images, or Word. Max 10MB each.",
+    "attachmentsHint": "PDF, JPEG, PNG, WebP, or Word. Max 5MB each. Video files are not allowed.",
     "submit": "Confirm session",
     "submitting": "Sending...",
     "legalNote": "By confirming, you agree to reasonable notice for rescheduling. We follow up by email.",
     "messages": {
       "needDateAndSlot": "Please choose a date and a time slot.",
+      "needDetails": "Please complete all required fields.",
       "success": "Session requested. You will receive confirmation if email is configured.",
+      "confirmed": "Your appointment is booked. We will follow up by email.",
       "failure": "Could not submit. Check fields and try again."
     }
   }

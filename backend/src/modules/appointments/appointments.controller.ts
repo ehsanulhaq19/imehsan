@@ -50,6 +50,11 @@ class BookAppointmentDto {
   @IsString()
   @MaxLength(4000)
   reason?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  timezone?: string;
 }
 
 class PatchAppointmentDto {
@@ -86,6 +91,11 @@ class PatchAppointmentDto {
   @IsString()
   @MaxLength(32)
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  timezone?: string;
 }
 
 @Controller('appointments')
@@ -118,6 +128,19 @@ export class AppointmentsAdminController {
     const limit = query.limit ?? 20;
     const [items, total] = await this.svc.listAdminPaginated(page, limit, query.q);
     return { items, meta: paginatedMeta(total, page, limit) };
+  }
+
+  @Get(':id/attachments/:mediaId/download')
+  downloadAttachment(
+    @Param('id') id: string,
+    @Param('mediaId') mediaId: string,
+  ) {
+    return this.svc.downloadAttachment(id, mediaId);
+  }
+
+  @Get(':id')
+  detail(@Param('id') id: string) {
+    return this.svc.findById(id);
   }
 
   @Patch(':id')
